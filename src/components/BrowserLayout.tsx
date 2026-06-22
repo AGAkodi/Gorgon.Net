@@ -547,74 +547,8 @@ export function BrowserLayout() {
             </button>
           </div>
 
-          {/* Secure Integrated Wallet Manager Button */}
-          <div className="relative">
-            <button
-              onClick={() => setIsWalletOpen(!isWalletOpen)}
-              className="flex items-center gap-2 bg-[#1B1B2C] hover:bg-[#25253F] px-3 py-1.5 border border-[#2C2C43] rounded-xl text-xs font-bold transition-colors select-none text-purple-300"
-            >
-              <Wallet className="w-3.5 h-3.5 text-purple-400" />
-              <span>0x7a8...F31</span>
-              <span className="text-[10px] text-gray-400 font-medium font-mono pl-1 border-l border-gray-600">
-                {wallet.eth.toFixed(2)} ETH
-              </span>
-            </button>
-
-            {/* Wallet Dashboard Dropdown */}
-            {isWalletOpen && (
-              <div className="absolute right-0 mt-2 w-[280px] bg-[#12121A] border border-[#2B2B3D] rounded-xl shadow-2xl p-4 space-y-3 z-50 animate-fade-in text-xs">
-                <div className="flex items-center justify-between border-b border-[#222235] pb-2">
-                  <span className="font-bold text-gray-300">Aegis Built-in Wallet</span>
-                  <button
-                    onClick={resetWallet}
-                    className="text-[10px] text-purple-400 hover:underline"
-                  >
-                    Reset Wallet
-                  </button>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="bg-[#181824] p-2.5 rounded-lg border border-[#232335] flex items-center justify-between">
-                    <div>
-                      <span className="text-[10px] text-gray-400 uppercase tracking-wider block">ETH balance</span>
-                      <span className="font-bold text-white text-sm">{wallet.eth.toFixed(4)} ETH</span>
-                    </div>
-                    <span className="text-gray-500 font-semibold">$34,200</span>
-                  </div>
-                  <div className="bg-[#181824] p-2.5 rounded-lg border border-[#232335] flex items-center justify-between">
-                    <div>
-                      <span className="text-[10px] text-gray-400 uppercase tracking-wider block">USDC balance</span>
-                      <span className="font-bold text-white text-sm">${wallet.usdc.toLocaleString()}</span>
-                    </div>
-                    <span className="text-gray-500 font-semibold">$5,000</span>
-                  </div>
-                </div>
-
-                {wallet.nfts.length > 0 ? (
-                  <div className="space-y-1.5">
-                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">
-                      Collectibles ({wallet.nfts.length})
-                    </span>
-                    <div className="flex flex-wrap gap-1">
-                      {wallet.nfts.map((nft) => (
-                        <span
-                          key={nft}
-                          className="px-2 py-0.5 bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 rounded text-[9.5px] font-semibold"
-                        >
-                          {nft}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="p-2 bg-red-950/40 border border-red-800/30 rounded-lg text-center text-[10px] text-red-400">
-                    ⚠️ Wallet collectibles have been drained!
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
         </div>
+
 
         {/* Browser Secondary Navigation bar */}
         <div className="bg-[#13131F] border-b border-[#222235] px-4 py-3 flex items-center justify-between gap-4 z-35 shadow-md">
