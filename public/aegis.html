@@ -517,37 +517,51 @@ Network calls: wss://mainnet.infura.io, https://api.uniswap.org</pre>
         </div>
 
         <!-- Zone 4: Transaction Interpreter -->
-        <div class="card" data-zone="tx-interpreter" data-state="populated">
-          <h3><i data-lucide="pen-line"></i> Before You Sign</h3>
-          <p class="card-title" id="txTitle">Approve USDC for spending</p>
-          <p class="muted" id="txPlain">
-            This contract is requesting permission to move your USDC. You can set a custom spend limit instead of unlimited approval.
-          </p>
+        <div class="card" data-zone="tx-interpreter" data-state="empty" id="txCard">
+          <h3>
+            <i data-lucide="pen-line"></i> Before You Sign
+            <span class="badge low" id="txPendingPill" style="margin-left:auto;display:none">● Pending</span>
+          </h3>
 
-          <div class="tx-perm">
-            <div class="perm-row"><span class="perm-key">Action</span><span class="perm-val" id="txAction">ERC-20 approve()</span></div>
-            <div class="perm-row"><span class="perm-key">Token</span><span class="perm-val" id="txToken">USDC</span></div>
-            <div class="perm-row"><span class="perm-key">Spender</span><span class="perm-val" id="txSpender">0xE592…1564 (Uniswap Router)</span></div>
-            <div class="perm-row"><span class="perm-key">Limit</span><span class="perm-val" id="txLimit">Unlimited ⚠</span></div>
-            <div class="perm-row"><span class="perm-key">Network fee</span><span class="perm-val" id="txFee">~$2.40</span></div>
+          <!-- Empty state: no pending signature -->
+          <div id="txEmpty" class="tx-empty">
+            <div class="tx-empty-icon"><i data-lucide="shield"></i></div>
+            <p class="muted" style="margin:6px 0 2px">No pending signature request.</p>
+            <p class="muted" style="font-size:11px">Aegis is watching this tab. The moment the site asks your wallet to sign anything, the request will be intercepted and explained here before it reaches MetaMask.</p>
           </div>
 
-          <span class="badge low" id="txRisk">Low risk</span>
+          <!-- Populated state -->
+          <div id="txBody" style="display:none">
+            <p class="card-title" id="txTitle">Approve USDC for spending</p>
+            <p class="muted" id="txPlain">
+              This contract is requesting permission to move your USDC. You can set a custom spend limit instead of unlimited approval.
+            </p>
 
-          <div class="tx-actions">
-            <button class="btn-limit" onclick="console.log('set limit')"><i data-lucide="sliders-horizontal"></i> Set Limit</button>
-            <button class="btn-approve" id="txApprove" onclick="console.log('approve')"><i data-lucide="check"></i> Approve</button>
-            <button class="btn-cancel" onclick="console.log('cancel')"><i data-lucide="x"></i> Cancel</button>
-          </div>
+            <div class="tx-perm">
+              <div class="perm-row"><span class="perm-key">Action</span><span class="perm-val" id="txAction">ERC-20 approve()</span></div>
+              <div class="perm-row"><span class="perm-key">Token</span><span class="perm-val" id="txToken">USDC</span></div>
+              <div class="perm-row"><span class="perm-key">Spender</span><span class="perm-val" id="txSpender">0xE592…1564 (Uniswap Router)</span></div>
+              <div class="perm-row"><span class="perm-key">Limit</span><span class="perm-val" id="txLimit">Unlimited ⚠</span></div>
+              <div class="perm-row"><span class="perm-key">Network fee</span><span class="perm-val" id="txFee">~$2.40</span></div>
+            </div>
 
-          <details class="expander">
-            <summary>Raw transaction data <i data-lucide="chevron-down"></i></summary>
-            <pre id="txRaw">to:    0xA0b8…eB48
+            <span class="badge low" id="txRisk">Low risk</span>
+
+            <div class="tx-actions">
+              <button class="btn-limit" id="txSetLimit"><i data-lucide="sliders-horizontal"></i> Set Limit</button>
+              <button class="btn-approve" id="txApprove"><i data-lucide="check"></i> Approve</button>
+              <button class="btn-cancel" id="txCancel"><i data-lucide="x"></i> Cancel</button>
+            </div>
+
+            <details class="expander">
+              <summary>Raw transaction data <i data-lucide="chevron-down"></i></summary>
+              <pre id="txRaw">to:    0xA0b8…eB48
 data:  0x095ea7b3000000000000000000000000e592...
 value: 0
 gas:   46211
 nonce: 142</pre>
-          </details>
+            </details>
+          </div>
         </div>
       </section>
 
