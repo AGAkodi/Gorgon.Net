@@ -63,7 +63,7 @@ export function OgNetworkPanel({ selectedModel, onModelChange, lastQueryMs }: Og
     fetchModels();
     // Animate sync time
     const interval = setInterval(() => {
-      setSyncTime(prev => 100 + Math.floor(Math.random() * 120));
+      setSyncTime((prev) => 100 + Math.floor(Math.random() * 120));
     }, 3000);
     return () => clearInterval(interval);
   }, []);
@@ -84,11 +84,10 @@ export function OgNetworkPanel({ selectedModel, onModelChange, lastQueryMs }: Og
     }
   }
 
-  const selectedModelData = models.find(m => m.id === selectedModel);
+  const selectedModelData = models.find((m) => m.id === selectedModel);
 
   return (
     <div className="flex flex-col h-full overflow-y-auto">
-
       {/* Header */}
       <div className="px-3 py-3 border-b border-[#212133] bg-gradient-to-r from-[#0D0D1E] to-[#111124]">
         <div className="flex items-center justify-between mb-2">
@@ -130,7 +129,8 @@ export function OgNetworkPanel({ selectedModel, onModelChange, lastQueryMs }: Og
         <div>
           <p className="text-[10px] font-bold text-green-300">TEE-Attested Inference</p>
           <p className="text-[9px] text-green-400/70 leading-relaxed mt-0.5">
-            Every inference runs inside Intel TDX enclaves verified by dstack. Providers cannot see your prompts.
+            Every inference runs inside Intel TDX enclaves verified by dstack. Providers cannot see
+            your prompts.
           </p>
         </div>
       </div>
@@ -138,13 +138,16 @@ export function OgNetworkPanel({ selectedModel, onModelChange, lastQueryMs }: Og
       {/* Active model card */}
       {selectedModelData && (
         <div className="mx-3 mt-3 bg-[#6C47FF]/10 border border-[#6C47FF]/30 rounded-lg p-3">
-          <p className="text-[9px] font-bold text-[#9F86FF] uppercase tracking-widest mb-1.5">Active Model</p>
+          <p className="text-[9px] font-bold text-[#9F86FF] uppercase tracking-widest mb-1.5">
+            Active Model
+          </p>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-white">{selectedModelData.name}</p>
               <p className="text-[9px] text-gray-400 mt-0.5">
                 {(selectedModelData.context_length / 1000).toFixed(0)}K ctx ·{" "}
-                {selectedModelData.provider_count} provider{selectedModelData.provider_count !== 1 ? "s" : ""}
+                {selectedModelData.provider_count} provider
+                {selectedModelData.provider_count !== 1 ? "s" : ""}
               </p>
             </div>
             <div className="text-right">
@@ -166,7 +169,12 @@ export function OgNetworkPanel({ selectedModel, onModelChange, lastQueryMs }: Og
       {/* Model catalog */}
       <div className="px-3 mt-3">
         <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-2">
-          Available Models {fetchedAt && <span className="font-normal text-gray-600">· refreshed {fetchedAt.toLocaleTimeString()}</span>}
+          Available Models{" "}
+          {fetchedAt && (
+            <span className="font-normal text-gray-600">
+              · refreshed {fetchedAt.toLocaleTimeString()}
+            </span>
+          )}
         </p>
 
         {loading && (
@@ -204,8 +212,12 @@ export function OgNetworkPanel({ selectedModel, onModelChange, lastQueryMs }: Og
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 min-w-0">
-                      <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isSelected ? "bg-[#9F86FF]" : "bg-gray-600"}`} />
-                      <span className={`text-[10.5px] font-semibold truncate ${isSelected ? "text-white" : "text-gray-300"}`}>
+                      <div
+                        className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isSelected ? "bg-[#9F86FF]" : "bg-gray-600"}`}
+                      />
+                      <span
+                        className={`text-[10.5px] font-semibold truncate ${isSelected ? "text-white" : "text-gray-300"}`}
+                      >
                         {model.name}
                       </span>
                       {isRecommended && (
@@ -218,7 +230,9 @@ export function OgNetworkPanel({ selectedModel, onModelChange, lastQueryMs }: Og
                       {model.tee_attested && (
                         <span className="text-[7px] text-green-400 font-bold">TDX</span>
                       )}
-                      <ChevronDown className={`w-3 h-3 text-gray-500 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+                      <ChevronDown
+                        className={`w-3 h-3 text-gray-500 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                      />
                     </div>
                   </div>
 
@@ -232,9 +246,7 @@ export function OgNetworkPanel({ selectedModel, onModelChange, lastQueryMs }: Og
                       </span>
                     )}
                     {model.provider_count > 0 && (
-                      <span className="text-[9px] text-gray-500">
-                        · {model.provider_count}P
-                      </span>
+                      <span className="text-[9px] text-gray-500">· {model.provider_count}P</span>
                     )}
                   </div>
                 </button>
@@ -261,7 +273,10 @@ export function OgNetworkPanel({ selectedModel, onModelChange, lastQueryMs }: Og
                       )}
                     </div>
                     <button
-                      onClick={(e) => { e.stopPropagation(); onModelChange(model.id); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onModelChange(model.id);
+                      }}
                       className={`mt-1.5 w-full text-center py-1 rounded text-[9px] font-bold transition-colors ${
                         isSelected
                           ? "bg-[#6C47FF]/30 text-[#9F86FF] border border-[#6C47FF]/40"

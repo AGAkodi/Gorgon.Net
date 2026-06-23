@@ -9,7 +9,7 @@ const SESSION_KEY = "gorgon_session_v1";
 
 export interface GorgonSession {
   searchHistory: string[]; // last 20 unique queries
-  selectedModel: string;   // active 0G model id
+  selectedModel: string; // active 0G model id
   apiKeyConfigured: boolean;
 }
 
@@ -48,9 +48,7 @@ export function saveSession(session: Partial<GorgonSession>): void {
 
 export function addSearchHistory(query: string): string[] {
   const session = loadSession();
-  const filtered = session.searchHistory.filter(
-    (q) => q.toLowerCase() !== query.toLowerCase()
-  );
+  const filtered = session.searchHistory.filter((q) => q.toLowerCase() !== query.toLowerCase());
   const next = [query, ...filtered].slice(0, 20);
   saveSession({ searchHistory: next });
   return next;

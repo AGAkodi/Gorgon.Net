@@ -23,7 +23,7 @@ export async function GET() {
     if (!upstream.ok) {
       return NextResponse.json(
         { error: "upstream_error", status: upstream.status },
-        { status: upstream.status }
+        { status: upstream.status },
       );
     }
 
@@ -38,8 +38,11 @@ export async function GET() {
     });
   } catch (err) {
     return NextResponse.json(
-      { error: "proxy_error", message: err instanceof Error ? err.message : "Failed to fetch 0G models" },
-      { status: 502 }
+      {
+        error: "proxy_error",
+        message: err instanceof Error ? err.message : "Failed to fetch 0G models",
+      },
+      { status: 502 },
     );
   }
 }

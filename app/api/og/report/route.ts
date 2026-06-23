@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json(
     { success: true, reportId: report.id, domain: report.domain },
-    { status: 201 }
+    { status: 201 },
   );
 }
 
@@ -56,12 +56,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ reports: reports.slice(-50) }, { status: 200 });
   }
 
-  const domainReports = reports.filter(
-    (r) => r.domain === domain.toLowerCase().trim()
-  );
+  const domainReports = reports.filter((r) => r.domain === domain.toLowerCase().trim());
 
   return NextResponse.json(
     { domain, count: domainReports.length, reports: domainReports },
-    { status: 200 }
+    { status: 200 },
   );
 }

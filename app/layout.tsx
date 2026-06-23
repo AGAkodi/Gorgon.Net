@@ -10,12 +10,14 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: "Gorgon.Net — AI Web3 Search Engine",
-  description: "Search, discover, and securely browse Web3 protocols with AI-powered trust scoring. Powered by the 0G decentralized knowledge graph.",
+  description:
+    "Search, discover, and securely browse Web3 protocols with AI-powered trust scoring. Powered by the 0G decentralized knowledge graph.",
   keywords: ["Web3", "AI", "0G", "Security", "Search Engine", "Crypto", "DeFi"],
   metadataBase: new URL("https://gorgon.net"),
   openGraph: {
     title: "Gorgon.Net — AI Web3 Search Engine",
-    description: "Search, discover, and securely browse Web3 protocols with AI-powered trust scoring.",
+    description:
+      "Search, discover, and securely browse Web3 protocols with AI-powered trust scoring.",
     url: "https://gorgon.net",
     siteName: "Gorgon.Net",
     images: [
@@ -32,17 +34,14 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Gorgon.Net — AI Web3 Search Engine",
-    description: "Search, discover, and securely browse Web3 protocols with AI-powered trust scoring.",
+    description:
+      "Search, discover, and securely browse Web3 protocols with AI-powered trust scoring.",
     images: ["/opengraph-image.png"],
   },
   manifest: "/manifest.json",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className="antialiased">{children}</body>

@@ -1,5 +1,16 @@
 import React, { useState } from "react";
-import { AlertOctagon, AlertTriangle, ArrowRight, Check, Code, Eye, Info, Shield, ShieldCheck, X } from "lucide-react";
+import {
+  AlertOctagon,
+  AlertTriangle,
+  ArrowRight,
+  Check,
+  Code,
+  Eye,
+  Info,
+  Shield,
+  ShieldCheck,
+  X,
+} from "lucide-react";
 
 interface SimulatedWalletDialogProps {
   isOpen: boolean;
@@ -45,24 +56,32 @@ export function SimulatedWalletDialog({
     if (tx.action.includes("setApprovalForAll")) {
       // Drains all NFTs in collection
       after.nfts = [];
-      warning = "CRITICAL: Approving this transaction grants complete permissions to transfer ALL Bored Ape Yacht Club NFTs out of your wallet. A malicious contract will immediately empty them.";
+      warning =
+        "CRITICAL: Approving this transaction grants complete permissions to transfer ALL Bored Ape Yacht Club NFTs out of your wallet. A malicious contract will immediately empty them.";
       severity = "critical";
-    } else if (tx.action.includes("exactInputSingle") || tx.action.includes("swap") || tx.title.includes("Swap")) {
+    } else if (
+      tx.action.includes("exactInputSingle") ||
+      tx.action.includes("swap") ||
+      tx.title.includes("Swap")
+    ) {
       // Simulated Swap: Deduct 1 ETH (or amount in title) and add USDC (or token in title)
       const ethAmount = parseFloat(tx.limit) || 1;
       after.eth = Math.max(0, walletBalance.eth - ethAmount);
       after.usdc = walletBalance.usdc + ethAmount * 3420;
-      warning = "Notice: Standard token exchange. 1.00 ETH will be traded for USDC. The recipient contract is the officially deployed Uniswap Router.";
+      warning =
+        "Notice: Standard token exchange. 1.00 ETH will be traded for USDC. The recipient contract is the officially deployed Uniswap Router.";
       severity = "low";
     } else if (tx.risk.cls === "crit" || tx.approveDanger) {
       // Default drainer catch-all
       after.eth = 0;
       after.usdc = 0;
       after.nfts = [];
-      warning = "CRITICAL WARNING: This interaction matches signature patterns used to wipe wallet contents. All ETH, USDC, and digital collectibles could be drained.";
+      warning =
+        "CRITICAL WARNING: This interaction matches signature patterns used to wipe wallet contents. All ETH, USDC, and digital collectibles could be drained.";
       severity = "critical";
     } else {
-      warning = "Notice: This transaction interacts with an external contract. Confirm you trust the website you are browsing.";
+      warning =
+        "Notice: This transaction interacts with an external contract. Confirm you trust the website you are browsing.";
       severity = "medium";
     }
 
@@ -105,8 +124,8 @@ export function SimulatedWalletDialog({
             severity === "critical"
               ? "bg-[#290F11]/80 border-[#5A1D20] text-red-200"
               : severity === "medium"
-              ? "bg-[#291B0F]/80 border-[#5A3E1D] text-amber-200"
-              : "bg-[#0F2916]/80 border-[#1D5A2E] text-green-200"
+                ? "bg-[#291B0F]/80 border-[#5A3E1D] text-amber-200"
+                : "bg-[#0F2916]/80 border-[#1D5A2E] text-green-200"
           }`}
         >
           {severity === "critical" ? (
@@ -121,8 +140,8 @@ export function SimulatedWalletDialog({
               {severity === "critical"
                 ? "CRITICAL ATTACK DETECTED"
                 : severity === "medium"
-                ? "SECURITY NOTICE"
-                : "VERDICT: SAFE ACTION"}
+                  ? "SECURITY NOTICE"
+                  : "VERDICT: SAFE ACTION"}
             </span>
             <p className="text-xs mt-1 leading-relaxed">{warning}</p>
           </div>
@@ -162,11 +181,13 @@ export function SimulatedWalletDialog({
                   Requested Signature
                 </span>
                 <span className="text-sm font-bold text-white block">{tx.title}</span>
-                
+
                 <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-[#2A2B3A] text-xs">
                   <div>
                     <span className="text-gray-400 block mb-0.5">Contract Action</span>
-                    <span className="font-semibold text-white font-mono break-all">{tx.action}</span>
+                    <span className="font-semibold text-white font-mono break-all">
+                      {tx.action}
+                    </span>
                   </div>
                   <div>
                     <span className="text-gray-400 block mb-0.5">Contract Spender</span>
@@ -188,7 +209,7 @@ export function SimulatedWalletDialog({
                 <span className="text-[10px] text-[#9F86FF] font-bold uppercase tracking-wider block mb-2">
                   Simulated Balance Changes
                 </span>
-                
+
                 <div className="bg-[#13131F] border border-[#2B2B3D] rounded-xl overflow-hidden divide-y divide-[#2A2B3A]">
                   {/* ETH balance changes */}
                   <div className="p-3 flex items-center justify-between text-xs">
@@ -203,8 +224,8 @@ export function SimulatedWalletDialog({
                           after.eth < walletBalance.eth
                             ? "text-red-400"
                             : after.eth > walletBalance.eth
-                            ? "text-green-400"
-                            : "text-white"
+                              ? "text-green-400"
+                              : "text-white"
                         }`}
                       >
                         {after.eth.toFixed(3)} ETH
@@ -225,8 +246,8 @@ export function SimulatedWalletDialog({
                           after.usdc < walletBalance.usdc
                             ? "text-red-400"
                             : after.usdc > walletBalance.usdc
-                            ? "text-green-400"
-                            : "text-white"
+                              ? "text-green-400"
+                              : "text-white"
                         }`}
                       >
                         {after.usdc.toLocaleString()} USDC
@@ -292,7 +313,7 @@ export function SimulatedWalletDialog({
           >
             Reject Request
           </button>
-          
+
           <button
             onClick={handleApprove}
             className={`flex-1 py-3 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] ${

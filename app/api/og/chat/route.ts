@@ -9,9 +9,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: "missing_api_key",
-        message: "0G API key not configured. Add VITE_0G_API_KEY=sk-... to your .env file. Get a key at https://pc.0g.ai",
+        message:
+          "0G API key not configured. Add VITE_0G_API_KEY=sk-... to your .env file. Get a key at https://pc.0g.ai",
       },
-      { status: 503 }
+      { status: 503 },
     );
   }
 
@@ -27,7 +28,7 @@ export async function POST(req: NextRequest) {
   if (!messages || !Array.isArray(messages)) {
     return NextResponse.json(
       { error: "messages_required", message: "messages array is required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -47,7 +48,7 @@ export async function POST(req: NextRequest) {
         headers: {
           "Content-Type": "text/event-stream",
           "Cache-Control": "no-cache",
-          "Connection": "keep-alive",
+          Connection: "keep-alive",
           "X-0G-Status": upstream.status.toString(),
         },
       });
@@ -58,7 +59,7 @@ export async function POST(req: NextRequest) {
     if (!upstream.ok) {
       return NextResponse.json(
         { error: "upstream_error", status: upstream.status, detail: data },
-        { status: upstream.status }
+        { status: upstream.status },
       );
     }
 
@@ -69,8 +70,11 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error("[0G proxy error]", err);
     return NextResponse.json(
-      { error: "proxy_error", message: err instanceof Error ? err.message : "Unknown error contacting 0G Router" },
-      { status: 502 }
+      {
+        error: "proxy_error",
+        message: err instanceof Error ? err.message : "Unknown error contacting 0G Router",
+      },
+      { status: 502 },
     );
   }
 }

@@ -24,7 +24,12 @@ interface MockDAppsProps {
   safeMode: boolean;
 }
 
-export function MockDApps({ currentUrl, onActionTrigger, walletBalance, safeMode }: MockDAppsProps) {
+export function MockDApps({
+  currentUrl,
+  onActionTrigger,
+  walletBalance,
+  safeMode,
+}: MockDAppsProps) {
   if (currentUrl.includes("uniswap-airdrop-claim.xyz")) {
     return (
       <AirdropScamSite
@@ -56,10 +61,14 @@ export function MockDApps({ currentUrl, onActionTrigger, walletBalance, safeMode
 /* ==========================================
    MOCK UNISWAP (SAFE DAPP)
    ========================================== */
-function UniswapSite({ onActionTrigger, walletBalance, safeMode }: Omit<MockDAppsProps, "currentUrl">) {
+function UniswapSite({
+  onActionTrigger,
+  walletBalance,
+  safeMode,
+}: Omit<MockDAppsProps, "currentUrl">) {
   const [swapAmount, setSwapAmount] = useState<string>("1");
   const [targetToken, setTargetToken] = useState<string>("USDC");
-  
+
   const estimatedUSDC = (parseFloat(swapAmount) || 0) * 3420;
 
   const handleSwap = () => {
@@ -73,7 +82,8 @@ function UniswapSite({ onActionTrigger, walletBalance, safeMode }: Omit<MockDApp
     // Step 1: Request permission to swap (ERC-20 approve USDC if swap was from USDC, or just simple swap tx)
     onActionTrigger({
       title: `Swap ${swapAmount} ETH for ${estimatedUSDC.toLocaleString()} USDC`,
-      plain: "Uniswap is requesting a transaction signature to execute a token swap. This moves ETH out of your wallet and returns USDC via the audited router contract.",
+      plain:
+        "Uniswap is requesting a transaction signature to execute a token swap. This moves ETH out of your wallet and returns USDC via the audited router contract.",
       action: "exactInputSingle(ETH -> USDC)",
       token: "ETH",
       spender: "0xE592…1564 (Uniswap Router)",
@@ -85,7 +95,7 @@ function UniswapSite({ onActionTrigger, walletBalance, safeMode }: Omit<MockDApp
       onApprove: () => {
         // Execute simulated state change
         // In this swap, ETH goes down and USDC goes up
-      }
+      },
     });
   };
 
@@ -147,7 +157,10 @@ function UniswapSite({ onActionTrigger, walletBalance, safeMode }: Omit<MockDApp
         <div className="bg-[#1C1C28] p-4 rounded-xl border border-[#2A2B3A] mt-1 mb-4">
           <div className="flex items-center justify-between">
             <div className="text-2xl font-bold text-white outline-none">
-              {estimatedUSDC.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              {estimatedUSDC.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
             </div>
             <span className="bg-[#2A2B3A] px-3 py-1.5 rounded-xl font-bold text-sm select-none border border-gray-600 text-pink-500">
               USDC
@@ -168,7 +181,8 @@ function UniswapSite({ onActionTrigger, walletBalance, safeMode }: Omit<MockDApp
       </div>
 
       <div className="mt-8 text-center text-xs text-gray-500 max-w-[380px] mx-auto">
-        Uniswap is an audited smart contract protocol. This simulation allows you to safely inspect how token swap signatures are evaluated in Sandbox Mode.
+        Uniswap is an audited smart contract protocol. This simulation allows you to safely inspect
+        how token swap signatures are evaluated in Sandbox Mode.
       </div>
     </div>
   );
@@ -177,7 +191,11 @@ function UniswapSite({ onActionTrigger, walletBalance, safeMode }: Omit<MockDApp
 /* ==========================================
    MOCK AIRDROP CLAIM (MALICIOUS ETH DRAINER)
    ========================================== */
-function AirdropScamSite({ onActionTrigger, walletBalance, safeMode }: Omit<MockDAppsProps, "currentUrl">) {
+function AirdropScamSite({
+  onActionTrigger,
+  walletBalance,
+  safeMode,
+}: Omit<MockDAppsProps, "currentUrl">) {
   const [claimed, setClaimed] = useState(false);
   const [seconds, setSeconds] = useState(148);
 
@@ -199,7 +217,8 @@ function AirdropScamSite({ onActionTrigger, walletBalance, safeMode }: Omit<Mock
     // Promises a 1.5 ETH claim, but actually sends a transaction transferring user's current ETH
     onActionTrigger({
       title: "setApprovalForAll — unlimited access",
-      plain: "This transaction grants the site permission to move ALL of your tokens and NFTs out of your wallet. While the site claims this is to 'verify' your airdrop eligibility, it will immediately drain your wallet.",
+      plain:
+        "This transaction grants the site permission to move ALL of your tokens and NFTs out of your wallet. While the site claims this is to 'verify' your airdrop eligibility, it will immediately drain your wallet.",
       action: "setApprovalForAll(true)",
       token: "ALL tokens & NFTs",
       spender: "0x9a3c…f8b1 (unverified claim portal)",
@@ -210,7 +229,7 @@ function AirdropScamSite({ onActionTrigger, walletBalance, safeMode }: Omit<Mock
       raw: `to:    0x9a3cf8b1aaaa0000000000000000000000000000\ndata:  0xa22cb4650000000000000000000000004d2be1020000000000000000000000000000e1020000000000000000000000000000000000000000000000000000000000000001\nvalue: 0\ngas:   58,213\nnonce: 87\n⚠ FLAG: granting operator role to unverified contract`,
       onApprove: () => {
         setClaimed(true);
-      }
+      },
     });
   };
 
@@ -226,7 +245,9 @@ function AirdropScamSite({ onActionTrigger, walletBalance, safeMode }: Omit<Mock
           <div className="w-8 h-8 rounded-full bg-[#FF007A] flex items-center justify-center font-bold text-white">
             U
           </div>
-          <span className="font-bold tracking-tight text-lg text-gray-300">Uniswap Airdrop Portal</span>
+          <span className="font-bold tracking-tight text-lg text-gray-300">
+            Uniswap Airdrop Portal
+          </span>
         </div>
         <div className="px-3 py-1 bg-[#1A1010] text-[#E53935] border border-[#3A1010] rounded-full text-xs font-bold flex items-center gap-1.5">
           <Flame className="w-3.5 h-3.5 animate-pulse" />
@@ -239,28 +260,39 @@ function AirdropScamSite({ onActionTrigger, walletBalance, safeMode }: Omit<Mock
         <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#1F140A] text-[#F59E0B] rounded-full text-xs font-bold mx-auto mb-4 border border-[#3A220F]">
           <Star className="w-3.5 h-3.5 fill-[#F59E0B]" /> Exclusive Season 3 Rewards
         </div>
-        
+
         <h1 className="text-3xl font-extrabold tracking-tight mb-2 bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
           Claim 2,500 UNI Airdrop
         </h1>
-        
+
         <p className="text-gray-400 text-sm mb-6 max-w-[380px] mx-auto">
-          Eligible users can claim their accumulated trading rewards. The portal closes soon, claim immediately before the epoch expires.
+          Eligible users can claim their accumulated trading rewards. The portal closes soon, claim
+          immediately before the epoch expires.
         </p>
 
         {/* Timer */}
         <div className="grid grid-cols-3 gap-2 max-w-[280px] mx-auto mb-6">
           <div className="bg-[#13131F] border border-[#2A2B3A] p-2.5 rounded-xl">
             <div className="text-xl font-bold text-white">00</div>
-            <div className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mt-0.5">Hours</div>
+            <div className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mt-0.5">
+              Hours
+            </div>
           </div>
           <div className="bg-[#13131F] border border-[#2A2B3A] p-2.5 rounded-xl">
-            <div className="text-xl font-bold text-[#F59E0B]">{formatTime(seconds).split(":")[0]}</div>
-            <div className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mt-0.5">Mins</div>
+            <div className="text-xl font-bold text-[#F59E0B]">
+              {formatTime(seconds).split(":")[0]}
+            </div>
+            <div className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mt-0.5">
+              Mins
+            </div>
           </div>
           <div className="bg-[#13131F] border border-[#2A2B3A] p-2.5 rounded-xl">
-            <div className="text-xl font-bold text-[#F59E0B]">{formatTime(seconds).split(":")[1]}</div>
-            <div className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mt-0.5">Secs</div>
+            <div className="text-xl font-bold text-[#F59E0B]">
+              {formatTime(seconds).split(":")[1]}
+            </div>
+            <div className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mt-0.5">
+              Secs
+            </div>
           </div>
         </div>
 
@@ -278,10 +310,9 @@ function AirdropScamSite({ onActionTrigger, walletBalance, safeMode }: Omit<Mock
           {claimed ? (
             <div className="p-3 bg-red-950 border border-red-800 rounded-xl text-red-400 text-sm font-semibold flex items-center justify-center gap-2">
               <ShieldAlert className="w-5 h-5 flex-shrink-0" />
-              {safeMode 
-                ? "Simulation executed. Wallet drained in Sandbox Mode!" 
-                : "Transaction signed. Balances drained!"
-              }
+              {safeMode
+                ? "Simulation executed. Wallet drained in Sandbox Mode!"
+                : "Transaction signed. Balances drained!"}
             </div>
           ) : (
             <button
@@ -294,7 +325,8 @@ function AirdropScamSite({ onActionTrigger, walletBalance, safeMode }: Omit<Mock
         </div>
 
         <p className="text-[10px] text-gray-600">
-          *Note: This claims to be gasless but requests a signature. By claiming, you represent that you are compliant with our Terms.
+          *Note: This claims to be gasless but requests a signature. By claiming, you represent that
+          you are compliant with our Terms.
         </p>
       </div>
     </div>
@@ -304,7 +336,11 @@ function AirdropScamSite({ onActionTrigger, walletBalance, safeMode }: Omit<Mock
 /* ==========================================
    MOCK NFT MINT (MALICIOUS NFT OPERATOR DRAINER)
    ========================================== */
-function NftScamSite({ onActionTrigger, walletBalance, safeMode }: Omit<MockDAppsProps, "currentUrl">) {
+function NftScamSite({
+  onActionTrigger,
+  walletBalance,
+  safeMode,
+}: Omit<MockDAppsProps, "currentUrl">) {
   const [minted, setMinted] = useState(false);
 
   const handleMint = () => {
@@ -313,7 +349,8 @@ function NftScamSite({ onActionTrigger, walletBalance, safeMode }: Omit<MockDApp
     const firstNft = walletBalance.nfts[0] || "NFT";
     onActionTrigger({
       title: `setApprovalForAll — operator role for ${firstNft}`,
-      plain: "This request asks for permission to manage ALL your digital collectibles (NFTs) in this collection. Clicking approve allows the contract operator to transfer these assets out of your wallet without any additional signature. Phishing sites use this to steal Bored Apes, Mutant Apes, and other valuable NFTs.",
+      plain:
+        "This request asks for permission to manage ALL your digital collectibles (NFTs) in this collection. Clicking approve allows the contract operator to transfer these assets out of your wallet without any additional signature. Phishing sites use this to steal Bored Apes, Mutant Apes, and other valuable NFTs.",
       action: "setApprovalForAll(true)",
       token: "ALL Bored Ape Yacht Club NFTs",
       spender: "0x76b2…19ea (unverified operator)",
@@ -324,7 +361,7 @@ function NftScamSite({ onActionTrigger, walletBalance, safeMode }: Omit<MockDApp
       raw: `to:    0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d (BoredApeYachtClub)\ndata:  0xa22cb46500000000000000000000000076b22295aa0000000000000000000000000019ea0000000000000000000000000000000000000000000000000000000000000001\nvalue: 0.05 ETH\ngas:   65,000\nnonce: 104\n⚠ WARNING: Operator address matches a flagged drainer deployer`,
       onApprove: () => {
         setMinted(true);
-      }
+      },
     });
   };
 
@@ -356,7 +393,7 @@ function NftScamSite({ onActionTrigger, walletBalance, safeMode }: Omit<MockDApp
             <span className="text-4xl">🦍</span>
             <div className="mt-2 text-xs font-bold text-yellow-500 tracking-wider">BORED APE</div>
             <div className="text-[10px] text-gray-400 mt-0.5">#VAULT-MINT</div>
-            
+
             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-[10px] font-bold text-cyan-400">
               <Sparkles className="w-4 h-4 mr-1 animate-spin" /> FREE ACCESS
             </div>
@@ -366,9 +403,10 @@ function NftScamSite({ onActionTrigger, walletBalance, safeMode }: Omit<MockDApp
         <h1 className="text-2xl font-black mb-2 uppercase tracking-wide">
           Bored Ape Vault Minting
         </h1>
-        
+
         <p className="text-gray-400 text-xs mb-6 max-w-[340px] mx-auto">
-          Holders of qualifying bluechip projects are eligible to mint 1 Vault Ape. Claim fee is 0.05 ETH. Max 1 per wallet.
+          Holders of qualifying bluechip projects are eligible to mint 1 Vault Ape. Claim fee is
+          0.05 ETH. Max 1 per wallet.
         </p>
 
         {/* Action Button */}
@@ -385,10 +423,9 @@ function NftScamSite({ onActionTrigger, walletBalance, safeMode }: Omit<MockDApp
           {minted ? (
             <div className="p-3 bg-red-950/60 border border-red-800 rounded-xl text-red-400 text-xs font-semibold flex items-center justify-center gap-2">
               <ShieldAlert className="w-4 h-4 flex-shrink-0" />
-              {safeMode 
-                ? "Simulated NFT Operator Grant approved! (NFTs stolen in Sandbox)" 
-                : "NFT Operator signature approved! Assets stolen!"
-              }
+              {safeMode
+                ? "Simulated NFT Operator Grant approved! (NFTs stolen in Sandbox)"
+                : "NFT Operator signature approved! Assets stolen!"}
             </div>
           ) : (
             <button
@@ -401,7 +438,8 @@ function NftScamSite({ onActionTrigger, walletBalance, safeMode }: Omit<MockDApp
         </div>
 
         <div className="text-[10px] text-gray-500 italic">
-          Verify contract interactions carefully. Malicious sites masquerade mint actions behind NFT collection transfers.
+          Verify contract interactions carefully. Malicious sites masquerade mint actions behind NFT
+          collection transfers.
         </div>
       </div>
     </div>

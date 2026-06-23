@@ -43,7 +43,7 @@ const DEFAULT_MODEL = CHAT_MODEL;
  */
 export async function ogChat(
   messages: OgMessage[],
-  options: OgChatOptions = {}
+  options: OgChatOptions = {},
 ): Promise<OgChatResult> {
   const { model = DEFAULT_MODEL, max_tokens = 512, systemPrompt } = options;
 

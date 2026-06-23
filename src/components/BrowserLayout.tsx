@@ -110,7 +110,9 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
   const [isSandboxOpen, setIsSandboxOpen] = useState<boolean>(false);
 
   // Active Sidebar Tab
-  const [activeTabPanel, setActiveTabPanel] = useState<"overview" | "scan" | "sandbox" | "discover" | "community" | "ai" | "0g">("overview");
+  const [activeTabPanel, setActiveTabPanel] = useState<
+    "overview" | "scan" | "sandbox" | "discover" | "community" | "ai" | "0g"
+  >("overview");
 
   // --- Search Engine Mode ---
   // isSearchMode=true when user typed a natural-language query (not a URL)
@@ -133,16 +135,17 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // CMD/CTRL + K to focus search
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
-        const searchInput = document.getElementById('omnibox-input') || document.getElementById('home-search-input');
+        const searchInput =
+          document.getElementById("omnibox-input") || document.getElementById("home-search-input");
         if (searchInput) {
           searchInput.focus();
         }
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   // Built-in Wallet Manager Panel Toggle
@@ -167,16 +170,25 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
           import("sonner").then(({ toast }) => toast.success("Wallet connected securely"));
         }
       } catch (err: any) {
-        import("sonner").then(({ toast }) => toast.error(err.message || "Failed to connect wallet"));
+        import("sonner").then(({ toast }) =>
+          toast.error(err.message || "Failed to connect wallet"),
+        );
       }
     } else {
-      import("sonner").then(({ toast }) => toast.error("Please install MetaMask or another Web3 wallet."));
+      import("sonner").then(({ toast }) =>
+        toast.error("Please install MetaMask or another Web3 wallet."),
+      );
     }
   };
 
   // Sandbox Timeline & Debrief Logs
   const [timeline, setTimeline] = useState<TimelineEvent[]>([
-    { risk: "low", time: "00:02", action: "Connect wallet", detail: "Requested virtual wallet address — eth_accounts" },
+    {
+      risk: "low",
+      time: "00:02",
+      action: "Connect wallet",
+      detail: "Requested virtual wallet address — eth_accounts",
+    },
   ]);
   const [simActionsCount, setSimActionsCount] = useState<number>(1);
   const [hiddenCallsCount, setHiddenCallsCount] = useState<number>(0);
@@ -186,7 +198,7 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
   // Signature Interception & Pre-sign AI Audit Modal
   const [isSignModalOpen, setIsSignModalOpen] = useState<boolean>(false);
   const [pendingTx, setPendingTx] = useState<any>(null);
-  
+
   // Normal Mode: AI Contract Audit Progress before signature
   const [isAiInterpreting, setIsAiInterpreting] = useState<boolean>(false);
   const [aiInterpretationStep, setAiInterpretationStep] = useState<string>("");
@@ -202,9 +214,21 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
   const [ogQueryTime, setOgQueryTime] = useState<number>(142); // ms
 
   // Community Reports list
-  const [reports, setReports] = useState<Array<{ user: string; date: string; text: string; helpful: number }>>([
-    { user: "0x7a…F31", date: "2 days ago", text: "Smooth swap on Arbitrum, gas was reasonable. Confirmed legit frontend via ENS resolver.", helpful: 42 },
-    { user: "vault.eth", date: "5 days ago", text: "Used the new Universal Router for a multi-hop. Worked as expected.", helpful: 17 },
+  const [reports, setReports] = useState<
+    Array<{ user: string; date: string; text: string; helpful: number }>
+  >([
+    {
+      user: "0x7a…F31",
+      date: "2 days ago",
+      text: "Smooth swap on Arbitrum, gas was reasonable. Confirmed legit frontend via ENS resolver.",
+      helpful: 42,
+    },
+    {
+      user: "vault.eth",
+      date: "5 days ago",
+      text: "Used the new Universal Router for a multi-hop. Worked as expected.",
+      helpful: 17,
+    },
   ]);
   const [newReportText, setNewReportText] = useState("");
   const [showReportForm, setShowReportForm] = useState(false);
@@ -218,11 +242,15 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
       score: 95,
       ring: "green",
       threat: { level: "Very Low", pct: 8, color: "#16A34A" },
-      summary: "Established decentralized exchange. No suspicious signals detected. Trusted by 4.2M wallets.",
+      summary:
+        "Established decentralized exchange. No suspicious signals detected. Trusted by 4.2M wallets.",
       pills: ["Community Trust", "New User Friendly", "Audited"],
-      explainer: "Uniswap is one of the largest decentralized exchanges on Ethereum, letting you swap tokens directly from your wallet without intermediaries.",
-      actionExplainer: "The page is offering token swaps. Connecting your wallet allows the site to read balances and request swap signatures — it cannot move funds without your approval.",
-      techDetails: "Router: 0xE592427A0AEce92De3Edee1F18E0157C05861564\nFrontend: Vercel · IPFS mirror available\nFramework: UniversalRouter v1.2\nNetwork calls: wss://mainnet.infura.io, https://api.uniswap.org",
+      explainer:
+        "Uniswap is one of the largest decentralized exchanges on Ethereum, letting you swap tokens directly from your wallet without intermediaries.",
+      actionExplainer:
+        "The page is offering token swaps. Connecting your wallet allows the site to read balances and request swap signatures — it cannot move funds without your approval.",
+      techDetails:
+        "Router: 0xE592427A0AEce92De3Edee1F18E0157C05861564\nFrontend: Vercel · IPFS mirror available\nFramework: UniversalRouter v1.2\nNetwork calls: wss://mainnet.infura.io, https://api.uniswap.org",
       checks: [
         { state: "pass", text: "Domain age", sub: "Registered 2018 · 6 years old" },
         { state: "pass", text: "Smart contract verified", sub: "Source matches deployed bytecode" },
@@ -243,11 +271,15 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
       score: 14,
       ring: "red",
       threat: { level: "Critical", pct: 92, color: "#E53935" },
-      summary: "Newly registered domain impersonating Uniswap. Contract is unverified and requests unlimited token access.",
+      summary:
+        "Newly registered domain impersonating Uniswap. Contract is unverified and requests unlimited token access.",
       pills: ["No Community Trust", "High Risk", "Unaudited"],
-      explainer: "This site claims to offer a Uniswap airdrop but the official Uniswap team has not announced any airdrop. The page mimics Uniswap's branding to appear legitimate.",
-      actionExplainer: "You are being asked to connect your wallet and sign an approval transaction that grants the site unlimited access to your tokens. This is a common drain pattern.",
-      techDetails: "Domain registered: 4 hours ago via Namecheap\nContract: 0x9a3c…f8b1 (unverified)\nDeployer: 0x4d2b…e102 (linked to 3 prior drainer contracts)\nFrontend: Vercel · cloned UI bundle",
+      explainer:
+        "This site claims to offer a Uniswap airdrop but the official Uniswap team has not announced any airdrop. The page mimics Uniswap's branding to appear legitimate.",
+      actionExplainer:
+        "You are being asked to connect your wallet and sign an approval transaction that grants the site unlimited access to your tokens. This is a common drain pattern.",
+      techDetails:
+        "Domain registered: 4 hours ago via Namecheap\nContract: 0x9a3c…f8b1 (unverified)\nDeployer: 0x4d2b…e102 (linked to 3 prior drainer contracts)\nFrontend: Vercel · cloned UI bundle",
       checks: [
         { state: "fail", text: "Domain age", sub: "Registered 4 hours ago" },
         { state: "fail", text: "Smart contract verified", sub: "Unverified bytecode" },
@@ -268,17 +300,29 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
       score: 22,
       ring: "red",
       threat: { level: "High Risk", pct: 78, color: "#E53935" },
-      summary: "Newly created page claiming to mint Bored Ape NFTs. Hidden calls request authorization to steal existing NFTs.",
+      summary:
+        "Newly created page claiming to mint Bored Ape NFTs. Hidden calls request authorization to steal existing NFTs.",
       pills: ["Suspicious Activity", "Collectibles Risk", "Unaudited"],
-      explainer: "This site claims to offer a free mint of Bored Ape Yacht Club NFTs. The official collection is closed, and this site is unaffiliated.",
-      actionExplainer: "You are being asked to click 'Mint NFT', but the underlying contract requests approval for your existing NFTs (setApprovalForAll) rather than minting new ones.",
-      techDetails: "Domain registered: 26 hours ago\nContract: 0x76b2…19ea (unverified)\nTarget Function: setApprovalForAll(0x76b2...)\nMatches pattern: collection-wide operator authorization",
+      explainer:
+        "This site claims to offer a free mint of Bored Ape Yacht Club NFTs. The official collection is closed, and this site is unaffiliated.",
+      actionExplainer:
+        "You are being asked to click 'Mint NFT', but the underlying contract requests approval for your existing NFTs (setApprovalForAll) rather than minting new ones.",
+      techDetails:
+        "Domain registered: 26 hours ago\nContract: 0x76b2…19ea (unverified)\nTarget Function: setApprovalForAll(0x76b2...)\nMatches pattern: collection-wide operator authorization",
       checks: [
         { state: "fail", text: "Domain age", sub: "Registered 26 hours ago" },
         { state: "fail", text: "Smart contract verified", sub: "Unverified bytecode" },
         { state: "warn", text: "UI fingerprint match", sub: "Imitates Bored Ape Yacht Club theme" },
-        { state: "fail", text: "Phishing patterns", sub: "Requests approval for external collections" },
-        { state: "pass", text: "Deployer reputation", sub: "First deployed contract from this address" },
+        {
+          state: "fail",
+          text: "Phishing patterns",
+          sub: "Requests approval for external collections",
+        },
+        {
+          state: "pass",
+          text: "Deployer reputation",
+          sub: "First deployed contract from this address",
+        },
         { state: "warn", text: "Community signal", sub: "4 reports — 100% negative" },
       ],
       nodes: 95,
@@ -293,7 +337,8 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
   // Detect if input is a natural-language search query vs a URL
   const detectInputMode = (input: string): "search" | "url" | "home" => {
     const trimmed = input.trim().toLowerCase();
-    if (trimmed === "" || trimmed === "home" || trimmed === "newtab" || trimmed === "new tab") return "home";
+    if (trimmed === "" || trimmed === "home" || trimmed === "newtab" || trimmed === "new tab")
+      return "home";
     // Has spaces → almost certainly a natural language query
     if (trimmed.includes(" ")) return "search";
     // Has a valid TLD pattern → URL
@@ -317,7 +362,7 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
       setIsSearchMode(true);
       setCurrentQuery(input.trim());
       setUrlInput(input.trim());
-      
+
       const newHistory = addSearchHistory(input.trim());
       setSearchHistory(newHistory);
 
@@ -335,7 +380,7 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
             };
           }
           return t;
-        })
+        }),
       );
       return;
     }
@@ -349,12 +394,12 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
   // When switching page on the current active tab
   const navigateTo = (url: string) => {
     let cleanUrl = url.trim().toLowerCase();
-    
+
     // Auto-normalize presets
     if (cleanUrl.includes("uniswap-airdrop")) cleanUrl = "uniswap-airdrop-claim.xyz";
     else if (cleanUrl.includes("ape-vaults")) cleanUrl = "ape-vaults-mint.net";
     else if (cleanUrl.includes("uniswap") || cleanUrl === "uniswap") cleanUrl = "app.uniswap.org";
-    
+
     if (!cleanUrl.includes(".") && cleanUrl !== "") {
       cleanUrl = cleanUrl + ".io";
     }
@@ -365,7 +410,7 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
     // Trigger 0G Network loading simulation
     setIsQueryingOg(true);
     const isNew = !ogGraphRegistry[cleanUrl];
-    
+
     const delay = isNew ? 1500 : 700;
     setOgQueryTime(isNew ? 1120 : 142);
     setOgCacheStatus(isNew ? "New Registry" : "Cached");
@@ -373,9 +418,12 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
     setTimeout(() => {
       if (isNew) {
         // Generate on-the-fly AI security analysis for the typed site
-        const score = cleanUrl.includes("scam") || cleanUrl.includes("claim") || cleanUrl.includes("free") ? 28 : 78;
+        const score =
+          cleanUrl.includes("scam") || cleanUrl.includes("claim") || cleanUrl.includes("free")
+            ? 28
+            : 78;
         const isMalicious = score < 40;
-        
+
         const newRecord: SiteRecord = {
           favicon: cleanUrl.charAt(0).toUpperCase(),
           domain: cleanUrl,
@@ -390,15 +438,27 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
           summary: isMalicious
             ? `Safety warning: Domain '${cleanUrl}' is unregistered in major Web3 directories. AI audits detected hidden collection access structures.`
             : `Audited safety scan of '${cleanUrl}' showed normal smart-contract execution wrappers and verified contract structures.`,
-          pills: isMalicious ? ["New Domain", "Unverified Code"] : ["Newly Syncing", "Single Audited"],
+          pills: isMalicious
+            ? ["New Domain", "Unverified Code"]
+            : ["Newly Syncing", "Single Audited"],
           explainer: `Aegis AI Explainer: This page represents the frontend interface for ${cleanUrl}. Plain English review shows it connects your address to initiate Web3 operations.`,
           actionExplainer: isMalicious
             ? "WARNING: Interactions on this domain demand signature authorization. Carefully verify contract functions before approving signatures."
             : "This page requests standard contract connections to read balances and execute calls.",
           techDetails: `Contract: 0x${Math.random().toString(16).slice(2, 10)}…${Math.random().toString(16).slice(2, 6)}\nFrontend: IPFS\nNetwork Sync: 0G Network Stored`,
           checks: [
-            { state: isMalicious ? "fail" : "warn", text: "Domain Registration", sub: `Registered recently. Safe age not met.` },
-            { state: isMalicious ? "fail" : "pass", text: "Bytecode signature", sub: isMalicious ? "Found operator role phishing patterns" : "Standard ERC contract format matched" },
+            {
+              state: isMalicious ? "fail" : "warn",
+              text: "Domain Registration",
+              sub: `Registered recently. Safe age not met.`,
+            },
+            {
+              state: isMalicious ? "fail" : "pass",
+              text: "Bytecode signature",
+              sub: isMalicious
+                ? "Found operator role phishing patterns"
+                : "Standard ERC contract format matched",
+            },
             { state: "warn", text: "0G Sync state", sub: "Fresh node broadcast pending" },
           ],
           nodes: 1,
@@ -419,7 +479,7 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
           if (t.id === activeTabId) {
             const nextHistory = t.history.slice(0, t.historyIdx + 1);
             nextHistory.push(cleanUrl);
-            
+
             let tabTitle = cleanUrl.split(".")[0].toUpperCase();
             if (cleanUrl.includes("uniswap-airdrop")) tabTitle = "UNI Claim";
             else if (cleanUrl.includes("ape-vaults")) tabTitle = "BAYC Mint";
@@ -434,14 +494,19 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
             };
           }
           return t;
-        })
+        }),
       );
-      
+
       setIsQueryingOg(false);
 
       // Reset Sandbox events
       setTimeline([
-        { risk: "low", time: "00:02", action: "Connect wallet", detail: "Requested virtual wallet address — eth_accounts" },
+        {
+          risk: "low",
+          time: "00:02",
+          action: "Connect wallet",
+          detail: "Requested virtual wallet address — eth_accounts",
+        },
       ]);
       setSimActionsCount(1);
       setHiddenCallsCount(0);
@@ -452,9 +517,11 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
         toast.success(`Navigated to ${cleanUrl} safely.`);
       } else {
         setActiveTabPanel("scan");
-        const targetScore = isNew 
-          ? (cleanUrl.includes("scam") || cleanUrl.includes("claim") || cleanUrl.includes("free") ? 28 : 78)
-          : ogGraphRegistry[cleanUrl]?.score ?? 78;
+        const targetScore = isNew
+          ? cleanUrl.includes("scam") || cleanUrl.includes("claim") || cleanUrl.includes("free")
+            ? 28
+            : 78
+          : (ogGraphRegistry[cleanUrl]?.score ?? 78);
         if (targetScore < 40) {
           toast.error(`Warning: High-risk domain blocked from executing auto-transactions.`);
         } else {
@@ -470,7 +537,7 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
       const url = history[idx];
       setUrlInput(url);
       setTabs((prev) =>
-        prev.map((t) => (t.id === activeTabId ? { ...t, url, historyIdx: idx } : t))
+        prev.map((t) => (t.id === activeTabId ? { ...t, url, historyIdx: idx } : t)),
       );
     }
   };
@@ -481,7 +548,7 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
       const url = history[idx];
       setUrlInput(url);
       setTabs((prev) =>
-        prev.map((t) => (t.id === activeTabId ? { ...t, url, historyIdx: idx } : t))
+        prev.map((t) => (t.id === activeTabId ? { ...t, url, historyIdx: idx } : t)),
       );
     }
   };
@@ -513,10 +580,10 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
   const handleCloseTab = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (tabs.length === 1) return; // Keep at least one tab open
-    
+
     const newTabs = tabs.filter((t) => t.id !== id);
     setTabs(newTabs);
-    
+
     if (activeTabId === id) {
       const remainingTab = newTabs[newTabs.length - 1];
       setActiveTabId(remainingTab.id);
@@ -563,31 +630,43 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
       setAiInterpretationStep("Querying 0G Network for contract audit...");
 
       ogChat(
-        [{ role: "user", content: `Audit this transaction:\nTitle: ${tx.title}\nDetails: ${tx.plain}\nIs this safe?` }],
-        { model: CHAT_MODEL, systemPrompt: "You are Gorgon AI, an expert smart contract auditor. Analyze the transaction and respond with a short risk assessment.", max_tokens: 150 }
-      ).then(() => {
-        setAiInterpretationStep("Evaluation complete. Showing risk debrief.");
-        setIsAiInterpreting(false);
-        toast.info("AI Transaction Audit Complete");
-        setPendingTx({
-          ...tx,
-          onApprove: () => {
-            tx.onApprove();
+        [
+          {
+            role: "user",
+            content: `Audit this transaction:\nTitle: ${tx.title}\nDetails: ${tx.plain}\nIs this safe?`,
           },
+        ],
+        {
+          model: CHAT_MODEL,
+          systemPrompt:
+            "You are Gorgon AI, an expert smart contract auditor. Analyze the transaction and respond with a short risk assessment.",
+          max_tokens: 150,
+        },
+      )
+        .then(() => {
+          setAiInterpretationStep("Evaluation complete. Showing risk debrief.");
+          setIsAiInterpreting(false);
+          toast.info("AI Transaction Audit Complete");
+          setPendingTx({
+            ...tx,
+            onApprove: () => {
+              tx.onApprove();
+            },
+          });
+          setIsSignModalOpen(true);
+        })
+        .catch((err) => {
+          console.error("AI Audit error:", err);
+          setAiInterpretationStep("Evaluation fallback. Showing risk debrief.");
+          setIsAiInterpreting(false);
+          setPendingTx({
+            ...tx,
+            onApprove: () => {
+              tx.onApprove();
+            },
+          });
+          setIsSignModalOpen(true);
         });
-        setIsSignModalOpen(true);
-      }).catch((err) => {
-        console.error("AI Audit error:", err);
-        setAiInterpretationStep("Evaluation fallback. Showing risk debrief.");
-        setIsAiInterpreting(false);
-        setPendingTx({
-          ...tx,
-          onApprove: () => {
-            tx.onApprove();
-          },
-        });
-        setIsSignModalOpen(true);
-      });
     }
   };
 
@@ -628,8 +707,18 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
     setIsSandboxOpen(true);
     // Seed default sandbox traces
     setTimeline([
-      { risk: "low", time: "00:02", action: "Forking mainnet chain", detail: "Creating isolated simulation sandbox fork at block 19284210" },
-      { risk: "low", time: "00:03", action: "Connect wallet", detail: "Requested virtual wallet address — eth_accounts" }
+      {
+        risk: "low",
+        time: "00:02",
+        action: "Forking mainnet chain",
+        detail: "Creating isolated simulation sandbox fork at block 19284210",
+      },
+      {
+        risk: "low",
+        time: "00:03",
+        action: "Connect wallet",
+        detail: "Requested virtual wallet address — eth_accounts",
+      },
     ]);
     setSimActionsCount(1);
     setHiddenCallsCount(0);
@@ -641,13 +730,13 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
     setIsSandboxOpen(false);
   };
 
-  const isBlocked = !safeMode && (activeUrl === "uniswap-airdrop-claim.xyz" || activeUrl === "ape-vaults-mint.net");
+  const isBlocked =
+    !safeMode && (activeUrl === "uniswap-airdrop-claim.xyz" || activeUrl === "ape-vaults-mint.net");
 
   return (
     <div className="w-full min-h-screen bg-[#07060A] text-[#ECECF3] flex items-center justify-center p-0 md:p-4 font-sans antialiased">
       {/* ===== STANDALONE BROWSER FRAME CONTAINER ===== */}
       <div className="w-full max-w-[1240px] h-screen md:h-[95vh] min-h-[640px] bg-[#0E0E17] border-0 md:border border-[#212133] rounded-none md:rounded-2xl flex flex-col overflow-hidden shadow-2xl relative">
-        
         {/* Desktop window controls and browser tabs */}
         <div className="bg-[#121220] border-b border-[#212133] px-4 py-2.5 flex items-center justify-between gap-4 z-40 select-none">
           {/* OS Windows controls + Gorgon.Net wordmark */}
@@ -659,14 +748,21 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
             </div>
             {/* Gorgon.Net logo mark */}
             <button
-              onClick={() => { setIsHomePage(true); setIsSearchMode(false); setUrlInput(""); setHomeInput(""); }}
+              onClick={() => {
+                setIsHomePage(true);
+                setIsSearchMode(false);
+                setUrlInput("");
+                setHomeInput("");
+              }}
               className="flex items-center gap-1.5 group"
               title="Gorgon.Net Home"
             >
               <div className="w-5 h-5 rounded-md bg-gradient-to-br from-[#6C47FF] to-[#9F86FF] flex items-center justify-center shadow-[0_0_8px_rgba(108,71,255,0.4)]">
                 <Shield className="w-3 h-3 text-white" />
               </div>
-              <span className="text-xs font-black text-white group-hover:text-[#9F86FF] transition-colors tracking-tight">Gorgon<span className="text-[#9F86FF]">.Net</span></span>
+              <span className="text-xs font-black text-white group-hover:text-[#9F86FF] transition-colors tracking-tight">
+                Gorgon<span className="text-[#9F86FF]">.Net</span>
+              </span>
             </button>
           </div>
 
@@ -684,7 +780,9 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                       : "bg-[#12121E]/40 border-transparent text-gray-500 hover:text-gray-300"
                   }`}
                 >
-                  <span className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-[#6C47FF]" : "bg-gray-700"}`}></span>
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-[#6C47FF]" : "bg-gray-700"}`}
+                  ></span>
                   <span className="truncate max-w-[90px]">{tab.title}</span>
                   <button
                     onClick={(e) => handleCloseTab(tab.id, e)}
@@ -703,9 +801,7 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
               <Plus className="w-3.5 h-3.5" />
             </button>
           </div>
-
         </div>
-
 
         {/* Browser Secondary Navigation bar */}
         <div className="bg-[#13131F] border-b border-[#222235] px-4 py-3 flex items-center justify-between gap-4 z-35 shadow-md">
@@ -759,11 +855,15 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
             />
             {/* Shortcut hint badge */}
             {!urlInput && (
-              <span className="absolute right-9 top-1/2 -translate-y-1/2 text-[8px] font-bold text-gray-500 border border-gray-700/50 px-1.5 py-0.5 rounded-md hidden md:block">⌘K</span>
+              <span className="absolute right-9 top-1/2 -translate-y-1/2 text-[8px] font-bold text-gray-500 border border-gray-700/50 px-1.5 py-0.5 rounded-md hidden md:block">
+                ⌘K
+              </span>
             )}
             {/* Mode indicator badge */}
             {urlInput.includes(" ") && (
-              <span className="absolute right-9 top-1/2 -translate-y-1/2 text-[8px] font-bold text-[#9F86FF] bg-[#6C47FF]/10 border border-[#6C47FF]/20 px-1.5 py-0.5 rounded-md">AI</span>
+              <span className="absolute right-9 top-1/2 -translate-y-1/2 text-[8px] font-bold text-[#9F86FF] bg-[#6C47FF]/10 border border-[#6C47FF]/20 px-1.5 py-0.5 rounded-md">
+                AI
+              </span>
             )}
             {/* Search/Navigate button */}
             <button
@@ -777,15 +877,16 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
 
           {/* Sandbox Toggle Switch & Wallet */}
           <div className="flex items-center gap-3">
-            
             <button
               onClick={connectWallet}
               className="px-3 py-1.5 bg-[#1B1B2C] hover:bg-[#2B2B3E] border border-[#2B2B43] rounded-lg text-[10px] font-bold text-gray-300 transition-colors flex items-center gap-1.5"
             >
               <div className="w-2 h-2 rounded-full bg-green-500"></div>
-              {realWalletAddress ? `${realWalletAddress.slice(0, 6)}...${realWalletAddress.slice(-4)}` : "Connect Wallet"}
+              {realWalletAddress
+                ? `${realWalletAddress.slice(0, 6)}...${realWalletAddress.slice(-4)}`
+                : "Connect Wallet"}
             </button>
-            
+
             <div className="w-px h-5 bg-[#2B2B43]"></div>
 
             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1 select-none">
@@ -820,27 +921,40 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
             {isQueryingOg ? (
               <span className="animate-pulse">Searching 0G Decentralized Knowledge Graph...</span>
             ) : ogCacheStatus === "Syncing" ? (
-              <span className="text-yellow-500 animate-pulse">Syncing new security registry to 0G storage nodes...</span>
+              <span className="text-yellow-500 animate-pulse">
+                Syncing new security registry to 0G storage nodes...
+              </span>
             ) : (
               <span>
                 0G Cache:{" "}
-                <span className={activeUrl.includes("claim") || activeUrl.includes("mint") ? "text-red-400" : "text-green-400"}>
-                  {activeUrl.includes("claim") || activeUrl.includes("mint") ? "Threat Flagged" : "Verified Safe"}
+                <span
+                  className={
+                    activeUrl.includes("claim") || activeUrl.includes("mint")
+                      ? "text-red-400"
+                      : "text-green-400"
+                  }
+                >
+                  {activeUrl.includes("claim") || activeUrl.includes("mint")
+                    ? "Threat Flagged"
+                    : "Verified Safe"}
                 </span>{" "}
                 (Node #{activeMeta.score > 80 ? "48" : "129"} latency {ogQueryTime}ms)
               </span>
             )}
           </div>
-          
+
           <div className="flex items-center gap-3">
-            <span>Global Registry: <strong className="text-white">{ogSyncedRecords}</strong> sites</span>
-            <span>Graph Nodes: <strong className="text-white">{ogNodesCount}</strong> verified</span>
+            <span>
+              Global Registry: <strong className="text-white">{ogSyncedRecords}</strong> sites
+            </span>
+            <span>
+              Graph Nodes: <strong className="text-white">{ogNodesCount}</strong> verified
+            </span>
           </div>
         </div>
 
         {/* ===== BROWSER VIEWPORT & SIDEBAR SPLIT (Normal Live Mode) ===== */}
         <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
-          
           {/* Left Panel: Web Page Viewport / Home / Search Results */}
           <div className="flex-1 flex flex-col bg-[#05050A] overflow-y-auto p-4 lg:p-6 min-h-[400px]">
             {isHomePage ? (
@@ -855,8 +969,12 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                     </div>
                   </div>
                   <div className="text-center">
-                    <h1 className="text-3xl font-black text-white tracking-tight">Gorgon<span className="text-[#9F86FF]">.Net</span></h1>
-                    <p className="text-xs text-gray-400 mt-1">AI-Powered Web3 Search Engine · Secured by 0G Network</p>
+                    <h1 className="text-3xl font-black text-white tracking-tight">
+                      Gorgon<span className="text-[#9F86FF]">.Net</span>
+                    </h1>
+                    <p className="text-xs text-gray-400 mt-1">
+                      AI-Powered Web3 Search Engine · Secured by 0G Network
+                    </p>
                   </div>
                 </div>
 
@@ -874,20 +992,22 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                       id="home-search-input"
                       type="text"
                       value={homeInput}
-                      onChange={e => {
+                      onChange={(e) => {
                         setHomeInput(e.target.value);
                         setHistorySelectedIndex(-1);
                       }}
-                      onKeyDown={e => {
+                      onKeyDown={(e) => {
                         if (e.key === "ArrowDown") {
                           e.preventDefault();
                           if (searchHistory.length > 0 && !homeInput) {
-                            setHistorySelectedIndex(prev => Math.min(prev + 1, searchHistory.length - 1));
+                            setHistorySelectedIndex((prev) =>
+                              Math.min(prev + 1, searchHistory.length - 1),
+                            );
                           }
                         } else if (e.key === "ArrowUp") {
                           e.preventDefault();
                           if (searchHistory.length > 0 && !homeInput) {
-                            setHistorySelectedIndex(prev => Math.max(prev - 1, -1));
+                            setHistorySelectedIndex((prev) => Math.max(prev - 1, -1));
                           }
                         } else if (e.key === "Enter") {
                           let finalQuery = homeInput.trim();
@@ -924,7 +1044,7 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                       {isSearching ? "Searching..." : "Search"}
                     </button>
                   </div>
-                  
+
                   {/* Search History Dropdown */}
                   {searchHistory.length > 0 && !homeInput && (
                     <div className="absolute top-full left-0 right-0 mt-2 bg-[#1A1A2B] border border-[#2B2B43] rounded-xl shadow-2xl overflow-hidden opacity-0 invisible group-focus-within:opacity-100 group-focus-within:visible transition-all z-20">
@@ -936,7 +1056,9 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                           <button
                             key={i}
                             className={`w-full text-left px-4 py-2.5 text-xs flex items-center gap-3 transition-colors ${
-                              i === historySelectedIndex ? "bg-[#2B2B43] text-white" : "text-gray-300 hover:bg-[#2B2B43]"
+                              i === historySelectedIndex
+                                ? "bg-[#2B2B43] text-white"
+                                : "text-gray-300 hover:bg-[#2B2B43]"
                             }`}
                             onMouseDown={(e) => {
                               // Use onMouseDown to prevent blur before click registers
@@ -948,7 +1070,9 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                               setTimeout(() => setIsSearching(false), 500);
                             }}
                           >
-                            <RotateCw className={`w-3.5 h-3.5 ${i === historySelectedIndex ? "text-gray-400" : "text-gray-500"}`} />
+                            <RotateCw
+                              className={`w-3.5 h-3.5 ${i === historySelectedIndex ? "text-gray-400" : "text-gray-500"}`}
+                            />
                             {h}
                           </button>
                         ))}
@@ -959,41 +1083,98 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
 
                 {/* Trending searches */}
                 <div className="mt-3 flex flex-wrap items-center gap-2 justify-center">
-                    <span className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">Trending:</span>
-                    {["best DEX for swaps", "ETH staking", "NFT marketplace", "DeFi lending", "airdrop scams"].map(q => (
-                      <button
-                        key={q}
-                        onClick={() => { setHomeInput(q); setUrlInput(q); handleSearchOrNavigate(q); }}
-                        className="text-[10.5px] text-gray-300 bg-[#1A1A2B] hover:bg-[#252538] border border-[#2B2B43] hover:border-[#6C47FF]/40 px-2.5 py-1 rounded-full transition-all"
-                      >
-                        {q}
-                      </button>
-                    ))}
-                  </div>
+                  <span className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">
+                    Trending:
+                  </span>
+                  {[
+                    "best DEX for swaps",
+                    "ETH staking",
+                    "NFT marketplace",
+                    "DeFi lending",
+                    "airdrop scams",
+                  ].map((q) => (
+                    <button
+                      key={q}
+                      onClick={() => {
+                        setHomeInput(q);
+                        setUrlInput(q);
+                        handleSearchOrNavigate(q);
+                      }}
+                      className="text-[10.5px] text-gray-300 bg-[#1A1A2B] hover:bg-[#252538] border border-[#2B2B43] hover:border-[#6C47FF]/40 px-2.5 py-1 rounded-full transition-all"
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </div>
 
                 {/* Quick links */}
                 <div className="mt-10 w-full max-w-[560px]">
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3 text-center">Popular Protocols</p>
+                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3 text-center">
+                    Popular Protocols
+                  </p>
                   <div className="grid grid-cols-3 gap-3">
                     {[
-                      { favicon: "U", name: "Uniswap", domain: "app.uniswap.org", category: "DEX", score: 95 },
-                      { favicon: "A", name: "Aave", domain: "app.aave.com", category: "Lending", score: 94 },
-                      { favicon: "L", name: "Lido", domain: "lido.fi", category: "Staking", score: 92 },
-                      { favicon: "C", name: "Curve", domain: "curve.fi", category: "DEX", score: 92 },
-                      { favicon: "O", name: "OpenSea", domain: "opensea.io", category: "NFTs", score: 91 },
-                      { favicon: "1", name: "1inch", domain: "1inch.io", category: "Aggregator", score: 89 },
-                    ].map(site => (
+                      {
+                        favicon: "U",
+                        name: "Uniswap",
+                        domain: "app.uniswap.org",
+                        category: "DEX",
+                        score: 95,
+                      },
+                      {
+                        favicon: "A",
+                        name: "Aave",
+                        domain: "app.aave.com",
+                        category: "Lending",
+                        score: 94,
+                      },
+                      {
+                        favicon: "L",
+                        name: "Lido",
+                        domain: "lido.fi",
+                        category: "Staking",
+                        score: 92,
+                      },
+                      {
+                        favicon: "C",
+                        name: "Curve",
+                        domain: "curve.fi",
+                        category: "DEX",
+                        score: 92,
+                      },
+                      {
+                        favicon: "O",
+                        name: "OpenSea",
+                        domain: "opensea.io",
+                        category: "NFTs",
+                        score: 91,
+                      },
+                      {
+                        favicon: "1",
+                        name: "1inch",
+                        domain: "1inch.io",
+                        category: "Aggregator",
+                        score: 89,
+                      },
+                    ].map((site) => (
                       <button
                         key={site.domain}
-                        onClick={() => { setIsHomePage(false); navigateTo(site.domain); }}
+                        onClick={() => {
+                          setIsHomePage(false);
+                          navigateTo(site.domain);
+                        }}
                         className="bg-[#0E0E17] hover:bg-[#181829] border border-[#212133] hover:border-[#6C47FF]/40 rounded-xl p-3 flex flex-col items-center gap-2 transition-all group"
                       >
-                        <div className="w-9 h-9 rounded-xl bg-[#1A1A2B] border border-[#2B2B43] flex items-center justify-center font-black text-[#9F86FF] text-sm group-hover:border-[#6C47FF]/50 transition-all">{site.favicon}</div>
+                        <div className="w-9 h-9 rounded-xl bg-[#1A1A2B] border border-[#2B2B43] flex items-center justify-center font-black text-[#9F86FF] text-sm group-hover:border-[#6C47FF]/50 transition-all">
+                          {site.favicon}
+                        </div>
                         <div className="text-center">
                           <p className="text-xs font-bold text-white">{site.name}</p>
                           <p className="text-[9px] text-gray-500">{site.category}</p>
                         </div>
-                        <div className="text-[9px] font-bold text-green-400">Score: {site.score}</div>
+                        <div className="text-[9px] font-bold text-green-400">
+                          Score: {site.score}
+                        </div>
                       </button>
                     ))}
                   </div>
@@ -1002,7 +1183,15 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
             ) : isSearchMode ? (
               /* ── AI SEARCH RESULTS PAGE ── */
               <div className="w-full max-w-[720px] mx-auto">
-                <SearchResults query={currentQuery} onNavigate={(url) => { setIsHomePage(false); setIsSearchMode(false); setCurrentQuery(""); navigateTo(url); }} />
+                <SearchResults
+                  query={currentQuery}
+                  onNavigate={(url) => {
+                    setIsHomePage(false);
+                    setIsSearchMode(false);
+                    setCurrentQuery("");
+                    navigateTo(url);
+                  }}
+                />
               </div>
             ) : isBlocked ? (
               /* ── Block Screen (phishing URL in Normal Live Mode) ── */
@@ -1013,9 +1202,11 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                   Blocked: Phishing Warning
                 </h2>
                 <p className="text-gray-300 text-xs mb-6 leading-relaxed">
-                  Gorgon.Net blocked this page for your safety. It requests operator roles (setApprovalForAll) or gas-less signatures (Permit2) to steal user tokens. To explore safely, enter Sandbox Mode.
+                  Gorgon.Net blocked this page for your safety. It requests operator roles
+                  (setApprovalForAll) or gas-less signatures (Permit2) to steal user tokens. To
+                  explore safely, enter Sandbox Mode.
                 </p>
-                
+
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <button
                     onClick={handleOpenSandbox}
@@ -1024,7 +1215,11 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                     <FlaskConical className="w-4 h-4" /> Open Site in Isolated Sandbox
                   </button>
                   <button
-                    onClick={() => { setIsHomePage(true); setIsSearchMode(false); setUrlInput(""); }}
+                    onClick={() => {
+                      setIsHomePage(true);
+                      setIsSearchMode(false);
+                      setUrlInput("");
+                    }}
                     className="bg-transparent hover:bg-white/5 border border-gray-700 text-gray-300 hover:text-white font-bold text-xs px-4 py-3 rounded-xl transition-all"
                   >
                     Return to Home
@@ -1046,7 +1241,6 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
 
           {/* Right Panel: Aegis Secure Sidebar */}
           <aside className="w-full lg:w-[360px] bg-[#0E0E17] border-t lg:border-t-0 lg:border-l border-[#212133] flex flex-col h-[500px] lg:h-auto overflow-hidden">
-            
             {/* Sidebar Site Info Section */}
             <div className="p-4 border-b border-[#212133] bg-[#121220]">
               <div className="flex items-center gap-3">
@@ -1054,11 +1248,16 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                   {activeMeta.favicon}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <span className="font-bold text-sm text-white block truncate">{activeMeta.domain}</span>
+                  <span className="font-bold text-sm text-white block truncate">
+                    {activeMeta.domain}
+                  </span>
                   <span className="text-[10px] text-gray-400 flex items-center gap-1 mt-0.5">
                     <span
                       className={`w-1.5 h-1.5 rounded-full`}
-                      style={{ background: activeMeta.threat.color, boxShadow: `0 0 6px ${activeMeta.threat.color}` }}
+                      style={{
+                        background: activeMeta.threat.color,
+                        boxShadow: `0 0 6px ${activeMeta.threat.color}`,
+                      }}
                     ></span>
                     {activeMeta.category}
                   </span>
@@ -1067,7 +1266,14 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                 {/* Circular Safety Score Ring */}
                 <div className="relative w-10 h-10 flex-shrink-0">
                   <svg width="40" height="40" viewBox="0 0 40 40" className="-rotate-90">
-                    <circle cx="20" cy="20" r="16" fill="none" stroke="#222235" strokeWidth="3.5"></circle>
+                    <circle
+                      cx="20"
+                      cy="20"
+                      r="16"
+                      fill="none"
+                      stroke="#222235"
+                      strokeWidth="3.5"
+                    ></circle>
                     <circle
                       cx="20"
                       cy="20"
@@ -1144,7 +1350,6 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
 
             {/* Tab Inner Area */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              
               {/* T1: Overview tab */}
               {activeTabPanel === "overview" && (
                 <div className="space-y-4 animate-fade-in">
@@ -1177,7 +1382,10 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                       </span>
                       <p className="text-xs text-gray-300">{aiInterpretationStep}</p>
                       <div className="w-full bg-[#131320] h-1.5 rounded-full overflow-hidden">
-                        <div className="h-full bg-amber-500 animate-pulse" style={{ width: "60%" }}></div>
+                        <div
+                          className="h-full bg-amber-500 animate-pulse"
+                          style={{ width: "60%" }}
+                        ></div>
                       </div>
                     </div>
                   ) : (
@@ -1203,7 +1411,9 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                             )}
                             <div>
                               <span className="font-semibold block text-white">{check.text}</span>
-                              <span className="text-[10px] text-gray-400 block mt-0.5">{check.sub}</span>
+                              <span className="text-[10px] text-gray-400 block mt-0.5">
+                                {check.sub}
+                              </span>
                             </div>
                           </li>
                         ))}
@@ -1220,27 +1430,79 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                   <div>
                     <div className="flex items-center gap-1.5 mb-2">
                       <Flame className="w-3.5 h-3.5 text-orange-400" />
-                      <span className="text-[9.5px] font-black text-gray-300 uppercase tracking-widest">Trending Protocols</span>
+                      <span className="text-[9.5px] font-black text-gray-300 uppercase tracking-widest">
+                        Trending Protocols
+                      </span>
                     </div>
                     <div className="space-y-2">
                       {[
-                        { favicon: "U", name: "Uniswap", domain: "app.uniswap.org", tag: "DEX", score: 95, color: "text-green-400", change: "+12% volume" },
-                        { favicon: "A", name: "Aave", domain: "app.aave.com", tag: "Lending", score: 94, color: "text-green-400", change: "$12.8B TVL" },
-                        { favicon: "L", name: "Lido", domain: "lido.fi", tag: "Staking", score: 92, color: "text-green-400", change: "32B staked" },
-                        { favicon: "B", name: "Blur", domain: "blur.io", tag: "NFT", score: 87, color: "text-green-400", change: "Top NFT vol" },
-                        { favicon: "P", name: "PancakeSwap", domain: "pancakeswap.finance", tag: "DEX", score: 86, color: "text-green-400", change: "BSC leader" },
+                        {
+                          favicon: "U",
+                          name: "Uniswap",
+                          domain: "app.uniswap.org",
+                          tag: "DEX",
+                          score: 95,
+                          color: "text-green-400",
+                          change: "+12% volume",
+                        },
+                        {
+                          favicon: "A",
+                          name: "Aave",
+                          domain: "app.aave.com",
+                          tag: "Lending",
+                          score: 94,
+                          color: "text-green-400",
+                          change: "$12.8B TVL",
+                        },
+                        {
+                          favicon: "L",
+                          name: "Lido",
+                          domain: "lido.fi",
+                          tag: "Staking",
+                          score: 92,
+                          color: "text-green-400",
+                          change: "32B staked",
+                        },
+                        {
+                          favicon: "B",
+                          name: "Blur",
+                          domain: "blur.io",
+                          tag: "NFT",
+                          score: 87,
+                          color: "text-green-400",
+                          change: "Top NFT vol",
+                        },
+                        {
+                          favicon: "P",
+                          name: "PancakeSwap",
+                          domain: "pancakeswap.finance",
+                          tag: "DEX",
+                          score: 86,
+                          color: "text-green-400",
+                          change: "BSC leader",
+                        },
                       ].map((site, idx) => (
                         <button
                           key={site.domain}
-                          onClick={() => { setIsHomePage(false); setIsSearchMode(false); navigateTo(site.domain); }}
+                          onClick={() => {
+                            setIsHomePage(false);
+                            setIsSearchMode(false);
+                            navigateTo(site.domain);
+                          }}
                           className="w-full bg-[#181829] hover:bg-[#1E1E35] border border-[#2B2B43] hover:border-[#6C47FF]/40 rounded-xl p-2.5 flex items-center gap-2.5 transition-all group text-left"
                         >
-                          <span className="text-[10px] font-black text-gray-600 w-4 flex-shrink-0">#{idx+1}</span>
-                          <div className="w-7 h-7 rounded-lg bg-[#1A1A2B] border border-[#2B2B43] flex items-center justify-center font-black text-[#9F86FF] text-xs flex-shrink-0">{site.favicon}</div>
+                          <span className="text-[10px] font-black text-gray-600 w-4 flex-shrink-0">
+                            #{idx + 1}
+                          </span>
+                          <div className="w-7 h-7 rounded-lg bg-[#1A1A2B] border border-[#2B2B43] flex items-center justify-center font-black text-[#9F86FF] text-xs flex-shrink-0">
+                            {site.favicon}
+                          </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1.5">
                               <span className="text-xs font-bold text-white">{site.name}</span>
-                              <span className="text-[8px] text-gray-500 bg-[#1A1A2B] border border-[#2B2B43] px-1 py-0.5 rounded">{site.tag}</span>
+                              <span className="text-[8px] text-gray-500 bg-[#1A1A2B] border border-[#2B2B43] px-1 py-0.5 rounded">
+                                {site.tag}
+                              </span>
                             </div>
                             <span className="text-[9.5px] text-gray-500">{site.change}</span>
                           </div>
@@ -1255,20 +1517,42 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                   <div>
                     <div className="flex items-center gap-1.5 mb-2">
                       <ShieldAlert className="w-3.5 h-3.5 text-red-400" />
-                      <span className="text-[9.5px] font-black text-gray-300 uppercase tracking-widest">Scam Watch 🚨</span>
+                      <span className="text-[9.5px] font-black text-gray-300 uppercase tracking-widest">
+                        Scam Watch 🚨
+                      </span>
                     </div>
                     <div className="space-y-2">
                       {[
-                        { domain: "uniswap-airdrop-claim.xyz", type: "Fake Airdrop", ago: "4h ago", reports: 11 },
-                        { domain: "ape-vaults-mint.net", type: "NFT Drainer", ago: "26h ago", reports: 4 },
-                        { domain: "blur-nft-claim.io", type: "Phishing Clone", ago: "2d ago", reports: 28 },
-                      ].map(s => (
-                        <div key={s.domain} className="bg-red-950/20 border border-red-800/30 rounded-xl p-2.5 flex items-start gap-2">
+                        {
+                          domain: "uniswap-airdrop-claim.xyz",
+                          type: "Fake Airdrop",
+                          ago: "4h ago",
+                          reports: 11,
+                        },
+                        {
+                          domain: "ape-vaults-mint.net",
+                          type: "NFT Drainer",
+                          ago: "26h ago",
+                          reports: 4,
+                        },
+                        {
+                          domain: "blur-nft-claim.io",
+                          type: "Phishing Clone",
+                          ago: "2d ago",
+                          reports: 28,
+                        },
+                      ].map((s) => (
+                        <div
+                          key={s.domain}
+                          className="bg-red-950/20 border border-red-800/30 rounded-xl p-2.5 flex items-start gap-2"
+                        >
                           <div className="w-5 h-5 rounded-lg bg-red-900/30 border border-red-800/40 flex items-center justify-center flex-shrink-0 mt-0.5">
                             <Ban className="w-3 h-3 text-red-400" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-[10px] font-bold text-red-300 truncate">{s.domain}</p>
+                            <p className="text-[10px] font-bold text-red-300 truncate">
+                              {s.domain}
+                            </p>
                             <div className="flex items-center gap-2 mt-0.5">
                               <span className="text-[9px] text-red-400/60">{s.type}</span>
                               <span className="text-[9px] text-gray-600">·</span>
@@ -1286,18 +1570,29 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                   <div className="bg-gradient-to-br from-[#1A1435] to-[#181829] border border-[#6C47FF]/30 rounded-xl p-3 space-y-2">
                     <div className="flex items-center gap-1.5">
                       <Star className="w-3.5 h-3.5 text-yellow-400" />
-                      <span className="text-[9.5px] font-black text-[#9F86FF] uppercase tracking-widest">Gorgon AI Pick</span>
+                      <span className="text-[9.5px] font-black text-[#9F86FF] uppercase tracking-widest">
+                        Gorgon AI Pick
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-xl bg-[#1A1A2B] border border-[#2B2B43] flex items-center justify-center font-black text-[#9F86FF] text-sm">A</div>
+                      <div className="w-8 h-8 rounded-xl bg-[#1A1A2B] border border-[#2B2B43] flex items-center justify-center font-black text-[#9F86FF] text-sm">
+                        A
+                      </div>
                       <div>
                         <p className="text-xs font-bold text-white">Aave v3</p>
                         <p className="text-[9px] text-gray-400">Lending · 94/100 trust score</p>
                       </div>
                     </div>
-                    <p className="text-[10.5px] text-gray-400 leading-relaxed">Most secure lending protocol for earning yield on idle assets. $12.8B TVL, triple-audited, DAO-governed.</p>
+                    <p className="text-[10.5px] text-gray-400 leading-relaxed">
+                      Most secure lending protocol for earning yield on idle assets. $12.8B TVL,
+                      triple-audited, DAO-governed.
+                    </p>
                     <button
-                      onClick={() => { setIsHomePage(false); setIsSearchMode(false); navigateTo("app.aave.com"); }}
+                      onClick={() => {
+                        setIsHomePage(false);
+                        setIsSearchMode(false);
+                        navigateTo("app.aave.com");
+                      }}
                       className="w-full py-2 bg-[#6C47FF]/20 hover:bg-[#6C47FF]/30 border border-[#6C47FF]/30 text-[#9F86FF] text-[10px] font-bold rounded-lg transition-all"
                     >
                       Open Aave with Trust Verification →
@@ -1306,12 +1601,25 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
 
                   {/* Quick search */}
                   <div>
-                    <p className="text-[9.5px] font-black text-gray-500 uppercase tracking-widest mb-2">Quick Searches</p>
+                    <p className="text-[9.5px] font-black text-gray-500 uppercase tracking-widest mb-2">
+                      Quick Searches
+                    </p>
                     <div className="flex flex-wrap gap-1.5">
-                      {["best DEX", "ETH staking", "NFT marketplace", "DeFi lending", "airdrop scams"].map(q => (
+                      {[
+                        "best DEX",
+                        "ETH staking",
+                        "NFT marketplace",
+                        "DeFi lending",
+                        "airdrop scams",
+                      ].map((q) => (
                         <button
                           key={q}
-                          onClick={() => { setUrlInput(q); setIsHomePage(false); setIsSearchMode(true); setCurrentQuery(q); }}
+                          onClick={() => {
+                            setUrlInput(q);
+                            setIsHomePage(false);
+                            setIsSearchMode(true);
+                            setCurrentQuery(q);
+                          }}
                           className="text-[9px] text-gray-300 bg-[#1A1A2B] hover:bg-[#252538] border border-[#2B2B43] px-2 py-1 rounded-full transition-all"
                         >
                           {q}
@@ -1331,8 +1639,14 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                       <span>Negative {activeMeta.negSentiment}%</span>
                     </div>
                     <div className="h-1.5 rounded-full flex overflow-hidden">
-                      <div className="bg-green-500 h-full" style={{ width: `${activeMeta.posSentiment}%` }}></div>
-                      <div className="bg-red-500 h-full" style={{ width: `${activeMeta.negSentiment}%` }}></div>
+                      <div
+                        className="bg-green-500 h-full"
+                        style={{ width: `${activeMeta.posSentiment}%` }}
+                      ></div>
+                      <div
+                        className="bg-red-500 h-full"
+                        style={{ width: `${activeMeta.negSentiment}%` }}
+                      ></div>
                     </div>
                   </div>
 
@@ -1344,7 +1658,10 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                       <MessageSquarePlus className="w-3.5 h-3.5" /> Submit Security Warning
                     </button>
                   ) : (
-                    <form onSubmit={handleCommunitySubmit} className="bg-[#181829] border border-[#2B2B43] p-3 rounded-xl space-y-3">
+                    <form
+                      onSubmit={handleCommunitySubmit}
+                      className="bg-[#181829] border border-[#2B2B43] p-3 rounded-xl space-y-3"
+                    >
                       <textarea
                         value={newReportText}
                         onChange={(e) => setNewReportText(e.target.value)}
@@ -1352,18 +1669,34 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                         className="w-full h-16 bg-[#131320] border border-[#222235] rounded-lg p-2 text-xs outline-none text-white focus:border-[#6C47FF] resize-none"
                       ></textarea>
                       <div className="flex gap-2">
-                        <button type="submit" className="flex-1 py-1.5 bg-purple-600 text-white font-bold text-[10.5px] rounded-lg">Submit</button>
-                        <button type="button" onClick={() => setShowReportForm(false)} className="px-2.5 py-1.5 border border-gray-700 text-gray-400 text-[10.5px] rounded-lg">Cancel</button>
+                        <button
+                          type="submit"
+                          className="flex-1 py-1.5 bg-purple-600 text-white font-bold text-[10.5px] rounded-lg"
+                        >
+                          Submit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowReportForm(false)}
+                          className="px-2.5 py-1.5 border border-gray-700 text-gray-400 text-[10.5px] rounded-lg"
+                        >
+                          Cancel
+                        </button>
                       </div>
                     </form>
                   )}
 
                   <div className="space-y-3">
                     {reports.map((report, idx) => (
-                      <div key={idx} className="bg-[#181829] border border-[#2B2B43] p-3 rounded-xl space-y-1">
+                      <div
+                        key={idx}
+                        className="bg-[#181829] border border-[#2B2B43] p-3 rounded-xl space-y-1"
+                      >
                         <div className="flex justify-between items-center text-[10px]">
                           <span className="font-bold text-white flex items-center gap-1">
-                            <div className="w-3.5 h-3.5 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-[8px]">0x</div>
+                            <div className="w-3.5 h-3.5 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-[8px]">
+                              0x
+                            </div>
                             {report.user}
                           </span>
                           <span className="text-gray-500">{report.date}</span>
@@ -1390,10 +1723,7 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
               {/* T6: 0G Network Tab */}
               {activeTabPanel === "0g" && (
                 <div className="-m-4 h-[calc(100%+2rem)]" style={{ minHeight: 360 }}>
-                  <OgNetworkPanel 
-                    selectedModel={activeModel}
-                    onModelChange={setActiveModel}
-                  />
+                  <OgNetworkPanel selectedModel={activeModel} onModelChange={setActiveModel} />
                 </div>
               )}
             </div>
@@ -1420,10 +1750,15 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                 </div>
                 <div>
                   <h3 className="font-extrabold text-sm text-purple-100 flex items-center gap-2">
-                    AEGIS SECURE SANDBOX <span className="bg-purple-900 text-purple-300 border border-purple-700 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-widest">Isolated Workspace</span>
+                    AEGIS SECURE SANDBOX{" "}
+                    <span className="bg-purple-900 text-purple-300 border border-purple-700 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-widest">
+                      Isolated Workspace
+                    </span>
                   </h3>
                   <span className="text-[10px] text-purple-400 block -mt-0.5">
-                    Browsing URL: <span className="underline font-bold text-purple-200">{activeUrl}</span> (simulating all transaction hooks against virtual chain fork)
+                    Browsing URL:{" "}
+                    <span className="underline font-bold text-purple-200">{activeUrl}</span>{" "}
+                    (simulating all transaction hooks against virtual chain fork)
                   </span>
                 </div>
               </div>
@@ -1440,7 +1775,6 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
 
             {/* Sandbox main content split */}
             <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-              
               {/* Left Side: Mock dApp Viewport (Safe Mode Sandbox active) */}
               <div className="flex-1 bg-[#050407] overflow-y-auto p-4 lg:p-6 min-h-[350px] relative border-r border-purple-900/25 flex flex-col justify-center">
                 <div className="absolute top-4 left-4 text-[10px] text-purple-400 font-bold uppercase tracking-widest bg-purple-950/40 border border-purple-800/40 px-2.5 py-1 rounded-lg">
@@ -1475,15 +1809,21 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                   <div className="grid grid-cols-3 gap-2">
                     <div className="bg-[#181125] border border-purple-900/40 rounded-xl p-2 text-center">
                       <span className="text-lg font-black text-white">{simActionsCount}</span>
-                      <span className="text-[9px] text-purple-300 block uppercase mt-0.5">Actions</span>
+                      <span className="text-[9px] text-purple-300 block uppercase mt-0.5">
+                        Actions
+                      </span>
                     </div>
                     <div className="bg-[#181125] border border-purple-900/40 rounded-xl p-2 text-center">
                       <span className="text-lg font-black text-amber-500">{hiddenCallsCount}</span>
-                      <span className="text-[9px] text-purple-300 block uppercase mt-0.5">Hidden Calls</span>
+                      <span className="text-[9px] text-purple-300 block uppercase mt-0.5">
+                        Hidden Calls
+                      </span>
                     </div>
                     <div className="bg-[#181125] border border-purple-900/40 rounded-xl p-2 text-center">
                       <span className="text-lg font-black text-red-500">{flagsCount}</span>
-                      <span className="text-[9px] text-purple-300 block uppercase mt-0.5">Flags</span>
+                      <span className="text-[9px] text-purple-300 block uppercase mt-0.5">
+                        Flags
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -1499,14 +1839,22 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                         <div key={idx} className="relative text-xs">
                           <div
                             className={`absolute w-2 h-2 rounded-full -left-[20px] top-1 border border-[#0E0B14] ${
-                              event.risk === "high" ? "bg-red-500" : event.risk === "med" ? "bg-amber-500" : "bg-green-500"
+                              event.risk === "high"
+                                ? "bg-red-500"
+                                : event.risk === "med"
+                                  ? "bg-amber-500"
+                                  : "bg-green-500"
                             }`}
                           ></div>
                           <div className="flex items-center gap-1.5">
                             <span className="font-bold text-white">{event.action}</span>
-                            <span className="text-[9.5px] text-gray-500 font-mono">{event.time}</span>
+                            <span className="text-[9.5px] text-gray-500 font-mono">
+                              {event.time}
+                            </span>
                           </div>
-                          <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">{event.detail}</p>
+                          <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">
+                            {event.detail}
+                          </p>
                         </div>
                       ))}
                     </div>
@@ -1517,7 +1865,7 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                     <span className="text-[9.5px] font-bold text-purple-300 uppercase tracking-widest block">
                       Virtual Wallet Balance Changes
                     </span>
-                    
+
                     <div className="grid grid-cols-2 gap-2.5 text-xs">
                       <div className="bg-[#120D1D] border border-purple-950 p-2 rounded-lg">
                         <span className="text-[9px] text-gray-400 block mb-0.5">Virtual ETH</span>
@@ -1525,16 +1873,23 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                       </div>
                       <div className="bg-[#120D1D] border border-purple-950 p-2 rounded-lg">
                         <span className="text-[9px] text-gray-400 block mb-0.5">Virtual USDC</span>
-                        <span className="font-bold text-white">${wallet.usdc.toLocaleString()}</span>
+                        <span className="font-bold text-white">
+                          ${wallet.usdc.toLocaleString()}
+                        </span>
                       </div>
                     </div>
 
                     {wallet.nfts.length > 0 ? (
                       <div className="bg-[#120D1D] p-2 rounded-lg border border-purple-950">
-                        <span className="text-[9px] text-gray-400 block mb-1">Virtual NFTs ({wallet.nfts.length})</span>
+                        <span className="text-[9px] text-gray-400 block mb-1">
+                          Virtual NFTs ({wallet.nfts.length})
+                        </span>
                         <div className="flex flex-wrap gap-1">
                           {wallet.nfts.map((nft) => (
-                            <span key={nft} className="bg-purple-950/60 border border-purple-800/40 text-[#A88CFF] px-1.5 py-0.5 rounded text-[9px] font-semibold">
+                            <span
+                              key={nft}
+                              className="bg-purple-950/60 border border-purple-800/40 text-[#A88CFF] px-1.5 py-0.5 rounded text-[9px] font-semibold"
+                            >
                               {nft}
                             </span>
                           ))}
@@ -1596,9 +1951,13 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                 <div className="bg-[#0E2916] border border-[#1D5A2E] rounded-xl p-4 flex gap-3 text-green-200">
                   <ShieldCheck className="w-5.5 h-5.5 text-green-500 flex-shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-bold block uppercase">Sandbox Analysis: Clean Action</span>
+                    <span className="font-bold block uppercase">
+                      Sandbox Analysis: Clean Action
+                    </span>
                     <p className="mt-1 leading-relaxed">
-                      Standard swap execution verified. No transaction re-routes, code injections, or operator authorization abuses detected. The smart contract router is verified.
+                      Standard swap execution verified. No transaction re-routes, code injections,
+                      or operator authorization abuses detected. The smart contract router is
+                      verified.
                     </p>
                   </div>
                 </div>
@@ -1606,9 +1965,13 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                 <div className="bg-[#290F11] border border-[#5A1D20] rounded-xl p-4 flex gap-3 text-red-200">
                   <ShieldAlert className="w-5.5 h-5.5 text-red-500 flex-shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-bold block uppercase">Sandbox Analysis: Attack Blocked</span>
+                    <span className="font-bold block uppercase">
+                      Sandbox Analysis: Attack Blocked
+                    </span>
                     <p className="mt-1 leading-relaxed">
-                      Phishing drainer attempt intercepted! The simulated transactions attempted collection authorizations (`setApprovalForAll`) hidden behind swap/claim prompts.
+                      Phishing drainer attempt intercepted! The simulated transactions attempted
+                      collection authorizations (`setApprovalForAll`) hidden behind swap/claim
+                      prompts.
                     </p>
                   </div>
                 </div>
@@ -1628,7 +1991,9 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                 </div>
                 <div className="bg-[#181829] border border-[#2B2B43] p-3 rounded-xl">
                   <span className="text-xl font-black text-amber-500">{hiddenCallsCount}</span>
-                  <span className="text-[9px] text-gray-400 block uppercase mt-0.5">Hidden Calls</span>
+                  <span className="text-[9px] text-gray-400 block uppercase mt-0.5">
+                    Hidden Calls
+                  </span>
                 </div>
                 <div className="bg-[#181829] border border-[#2B2B43] p-3 rounded-xl">
                   <span className="text-xl font-black text-red-500">{flagsCount}</span>
@@ -1646,14 +2011,20 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
                     <div key={idx} className="relative text-xs">
                       <div
                         className={`absolute w-2 h-2 rounded-full -left-[20px] top-1 border border-[#11111C] ${
-                          event.risk === "high" ? "bg-red-500" : event.risk === "med" ? "bg-amber-500" : "bg-green-500"
+                          event.risk === "high"
+                            ? "bg-red-500"
+                            : event.risk === "med"
+                              ? "bg-amber-500"
+                              : "bg-green-500"
                         }`}
                       ></div>
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-white">{event.action}</span>
                         <span className="text-[9.5px] text-gray-500 font-mono">{event.time}</span>
                       </div>
-                      <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">{event.detail}</p>
+                      <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">
+                        {event.detail}
+                      </p>
                     </div>
                   ))}
                 </div>

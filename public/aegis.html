@@ -1,1042 +1,2192 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8" />
-<title>Aegis — AI Trust Layer for Web3</title>
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg:#FFFFFF;
-    --surface-2:#F5F7FA;
-    --surface-3:#F0F2F5;
-    --accent:#6C47FF;
-    --accent-soft:#F1ECFF;
-    --danger:#E53935;
-    --danger-soft:#FDECEC;
-    --warn:#F59E0B;
-    --warn-soft:#FEF3DD;
-    --safe:#16A34A;
-    --safe-soft:#E7F6EC;
-    --text:#0F0F10;
-    --text-2:#6B7280;
-    --border:#E5E7EB;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:var(--surface-3);font-family:'Inter',system-ui,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased}
-  body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:0}
+  <head>
+    <meta charset="utf-8" />
+    <title>Aegis — AI Trust Layer for Web3</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #ffffff;
+        --surface-2: #f5f7fa;
+        --surface-3: #f0f2f5;
+        --accent: #6c47ff;
+        --accent-soft: #f1ecff;
+        --danger: #e53935;
+        --danger-soft: #fdecec;
+        --warn: #f59e0b;
+        --warn-soft: #fef3dd;
+        --safe: #16a34a;
+        --safe-soft: #e7f6ec;
+        --text: #0f0f10;
+        --text-2: #6b7280;
+        --border: #e5e7eb;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--surface-3);
+        font-family: "Inter", system-ui, sans-serif;
+        color: var(--text);
+        -webkit-font-smoothing: antialiased;
+      }
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        padding: 0;
+      }
 
-  /* Sidebar shell */
-  .sidebar{
-    width:380px;height:100vh;background:var(--bg);
-    border-left:.5px solid var(--border);border-right:.5px solid var(--border);
-    display:flex;flex-direction:column;overflow:hidden;position:relative;
-    transition:box-shadow .2s ease, border-color .2s ease;
-  }
-  .sidebar.sandbox-active{box-shadow:inset 3px 0 0 var(--accent)}
+      /* Sidebar shell */
+      .sidebar {
+        width: 380px;
+        height: 100vh;
+        background: var(--bg);
+        border-left: 0.5px solid var(--border);
+        border-right: 0.5px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        position: relative;
+        transition:
+          box-shadow 0.2s ease,
+          border-color 0.2s ease;
+      }
+      .sidebar.sandbox-active {
+        box-shadow: inset 3px 0 0 var(--accent);
+      }
 
-  /* Scroll zone */
-  .scroll{flex:1;overflow-y:auto;padding:12px 14px 16px;scrollbar-width:thin;scrollbar-color:#D1D5DB transparent}
-  .scroll::-webkit-scrollbar{width:6px}
-  .scroll::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:3px}
+      /* Scroll zone */
+      .scroll {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px 14px 16px;
+        scrollbar-width: thin;
+        scrollbar-color: #d1d5db transparent;
+      }
+      .scroll::-webkit-scrollbar {
+        width: 6px;
+      }
+      .scroll::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 3px;
+      }
 
-  /* Header */
-  .header{
-    position:sticky;top:0;z-index:5;background:var(--bg);
-    border-bottom:.5px solid var(--border);padding:12px 14px 10px;
-  }
-  .header-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
-  .brand{display:flex;align-items:center;gap:8px}
-  .brand-mark{width:24px;height:24px;border-radius:6px;background:var(--accent);display:grid;place-items:center;color:#fff}
-  .brand-mark svg{width:14px;height:14px}
-  .brand-name{font-size:13px;font-weight:600;letter-spacing:-.01em}
-  .brand-name span{color:var(--text-2);font-weight:500}
-  .header-actions{display:flex;align-items:center;gap:6px}
-  .icon-btn{
-    width:28px;height:28px;border-radius:8px;border:.5px solid var(--border);background:#fff;
-    display:grid;place-items:center;cursor:pointer;color:var(--text-2);transition:all .15s ease;
-  }
-  .icon-btn:hover{background:var(--surface-2);color:var(--text)}
-  .icon-btn svg{width:14px;height:14px}
+      /* Header */
+      .header {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: var(--bg);
+        border-bottom: 0.5px solid var(--border);
+        padding: 12px 14px 10px;
+      }
+      .header-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .brand-mark {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        background: var(--accent);
+        display: grid;
+        place-items: center;
+        color: #fff;
+      }
+      .brand-mark svg {
+        width: 14px;
+        height: 14px;
+      }
+      .brand-name {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      .brand-name span {
+        color: var(--text-2);
+        font-weight: 500;
+      }
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .icon-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        border: 0.5px solid var(--border);
+        background: #fff;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        color: var(--text-2);
+        transition: all 0.15s ease;
+      }
+      .icon-btn:hover {
+        background: var(--surface-2);
+        color: var(--text);
+      }
+      .icon-btn svg {
+        width: 14px;
+        height: 14px;
+      }
 
-  .state-toggle{display:flex;gap:4px;background:var(--surface-2);padding:3px;border-radius:8px;margin-bottom:12px}
-  .state-toggle button{
-    flex:1;border:0;background:transparent;font:500 11px/1 'Inter';color:var(--text-2);
-    padding:6px 8px;border-radius:6px;cursor:pointer;transition:all .15s ease;
-  }
-  .state-toggle button.active{background:#fff;color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+      .state-toggle {
+        display: flex;
+        gap: 4px;
+        background: var(--surface-2);
+        padding: 3px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+      }
+      .state-toggle button {
+        flex: 1;
+        border: 0;
+        background: transparent;
+        font: 500 11px/1 "Inter";
+        color: var(--text-2);
+        padding: 6px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .state-toggle button.active {
+        background: #fff;
+        color: var(--text);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+      }
 
-  /* Site identity row */
-  .site-row{display:flex;align-items:center;gap:12px}
-  .site-favicon{
-    width:40px;height:40px;border-radius:10px;background:var(--surface-2);
-    display:grid;place-items:center;flex-shrink:0;border:.5px solid var(--border);
-    font-weight:700;font-size:16px;color:var(--accent);
-  }
-  .site-info{flex:1;min-width:0}
-  .site-domain{font-size:15px;font-weight:700;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .site-meta{font-size:11px;color:var(--text-2);margin-top:2px;display:flex;align-items:center;gap:6px}
-  .live-dot{width:6px;height:6px;border-radius:50%;background:var(--safe);box-shadow:0 0 0 3px rgba(22,163,74,.15)}
+      /* Site identity row */
+      .site-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .site-favicon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: var(--surface-2);
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        border: 0.5px solid var(--border);
+        font-weight: 700;
+        font-size: 16px;
+        color: var(--accent);
+      }
+      .site-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .site-domain {
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .site-meta {
+        font-size: 11px;
+        color: var(--text-2);
+        margin-top: 2px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .live-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--safe);
+        box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+      }
 
-  /* Score ring */
-  .score-wrap{position:relative;width:52px;height:52px;flex-shrink:0}
-  .score-wrap svg{transform:rotate(-90deg)}
-  .score-wrap .score-num{
-    position:absolute;inset:0;display:grid;place-items:center;
-    font-weight:700;font-size:16px;letter-spacing:-.02em;
-  }
+      /* Score ring */
+      .score-wrap {
+        position: relative;
+        width: 52px;
+        height: 52px;
+        flex-shrink: 0;
+      }
+      .score-wrap svg {
+        transform: rotate(-90deg);
+      }
+      .score-wrap .score-num {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+        font-size: 16px;
+        letter-spacing: -0.02em;
+      }
 
-  /* Status pills row */
-  .status-pills{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
-  .status-pill{
-    display:inline-flex;align-items:center;gap:6px;
-    background:var(--surface-2);border:.5px solid var(--border);
-    padding:5px 9px;border-radius:999px;font-size:11px;font-weight:500;color:var(--text);
-  }
-  .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-  .dot.green{background:var(--safe)} .dot.amber{background:var(--warn)} .dot.red{background:var(--danger)}
+      /* Status pills row */
+      .status-pills {
+        display: flex;
+        gap: 6px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--surface-2);
+        border: 0.5px solid var(--border);
+        padding: 5px 9px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--text);
+      }
+      .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .dot.green {
+        background: var(--safe);
+      }
+      .dot.amber {
+        background: var(--warn);
+      }
+      .dot.red {
+        background: var(--danger);
+      }
 
-  /* AI summary */
-  .ai-summary{
-    margin-top:10px;font-size:12.5px;line-height:1.55;color:var(--text-2);font-style:italic;
-    padding-left:8px;border-left:2px solid var(--accent);
-  }
+      /* AI summary */
+      .ai-summary {
+        margin-top: 10px;
+        font-size: 12.5px;
+        line-height: 1.55;
+        color: var(--text-2);
+        font-style: italic;
+        padding-left: 8px;
+        border-left: 2px solid var(--accent);
+      }
 
-  /* Sandbox banner inside header */
-  .sandbox-badge{
-    display:none;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent);
-    font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
-    padding:4px 8px;border-radius:6px;
-  }
-  .sandbox-badge svg{width:11px;height:11px}
-  .sidebar.sandbox-active .sandbox-badge{display:inline-flex}
+      /* Sandbox banner inside header */
+      .sandbox-badge {
+        display: none;
+        align-items: center;
+        gap: 6px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 4px 8px;
+        border-radius: 6px;
+      }
+      .sandbox-badge svg {
+        width: 11px;
+        height: 11px;
+      }
+      .sidebar.sandbox-active .sandbox-badge {
+        display: inline-flex;
+      }
 
-  /* Cards */
-  .card{
-    background:#fff;border:.5px solid var(--border);border-radius:12px;
-    padding:14px;margin-bottom:10px;
-  }
-  .card h3{
-    margin:0 0 10px;font-size:10px;font-weight:600;letter-spacing:.08em;
-    text-transform:uppercase;color:var(--text-2);display:flex;align-items:center;gap:6px;
-  }
-  .card h3 svg{width:12px;height:12px;color:var(--text-2)}
-  .card .card-title{font-size:13.5px;font-weight:600;color:var(--text);margin:0 0 6px}
-  .card p{margin:0 0 8px;font-size:13px;line-height:1.55;color:var(--text)}
-  .muted{color:var(--text-2);font-size:12px;line-height:1.55}
+      /* Cards */
+      .card {
+        background: #fff;
+        border: 0.5px solid var(--border);
+        border-radius: 12px;
+        padding: 14px;
+        margin-bottom: 10px;
+      }
+      .card h3 {
+        margin: 0 0 10px;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-2);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .card h3 svg {
+        width: 12px;
+        height: 12px;
+        color: var(--text-2);
+      }
+      .card .card-title {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: var(--text);
+        margin: 0 0 6px;
+      }
+      .card p {
+        margin: 0 0 8px;
+        font-size: 13px;
+        line-height: 1.55;
+        color: var(--text);
+      }
+      .muted {
+        color: var(--text-2);
+        font-size: 12px;
+        line-height: 1.55;
+      }
 
-  .sub-label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-2);margin:12px 0 6px}
+      .sub-label {
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-2);
+        margin: 12px 0 6px;
+      }
 
-  /* Expander */
-  details.expander{margin-top:10px;border-top:.5px dashed var(--border);padding-top:10px}
-  details.expander summary{
-    cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;
-    font-size:12px;font-weight:500;color:var(--accent);
-  }
-  details.expander summary::-webkit-details-marker{display:none}
-  details.expander summary svg{width:14px;height:14px;transition:transform .2s ease}
-  details.expander[open] summary svg{transform:rotate(180deg)}
-  details.expander pre{
-    margin:10px 0 0;background:var(--surface-2);border:.5px solid var(--border);border-radius:8px;
-    padding:10px;font-family:'SFMono-Regular',Consolas,monospace;font-size:11px;line-height:1.5;
-    color:var(--text);overflow:auto;white-space:pre-wrap;word-break:break-all;
-  }
+      /* Expander */
+      details.expander {
+        margin-top: 10px;
+        border-top: 0.5px dashed var(--border);
+        padding-top: 10px;
+      }
+      details.expander summary {
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--accent);
+      }
+      details.expander summary::-webkit-details-marker {
+        display: none;
+      }
+      details.expander summary svg {
+        width: 14px;
+        height: 14px;
+        transition: transform 0.2s ease;
+      }
+      details.expander[open] summary svg {
+        transform: rotate(180deg);
+      }
+      details.expander pre {
+        margin: 10px 0 0;
+        background: var(--surface-2);
+        border: 0.5px solid var(--border);
+        border-radius: 8px;
+        padding: 10px;
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 11px;
+        line-height: 1.5;
+        color: var(--text);
+        overflow: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
 
-  /* Threat bar */
-  .threat-bar{height:6px;border-radius:999px;background:var(--surface-2);overflow:hidden;margin:4px 0 10px}
-  .threat-bar-fill{height:100%;border-radius:999px;transition:width .3s ease}
-  .threat-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--text-2);margin-bottom:10px}
+      /* Threat bar */
+      .threat-bar {
+        height: 6px;
+        border-radius: 999px;
+        background: var(--surface-2);
+        overflow: hidden;
+        margin: 4px 0 10px;
+      }
+      .threat-bar-fill {
+        height: 100%;
+        border-radius: 999px;
+        transition: width 0.3s ease;
+      }
+      .threat-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        color: var(--text-2);
+        margin-bottom: 10px;
+      }
 
-  /* Checklist */
-  .checks{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
-  .check{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.45}
-  .check .ci{
-    width:18px;height:18px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;margin-top:1px;
-  }
-  .check .ci svg{width:11px;height:11px;color:#fff}
-  .ci.pass{background:var(--safe)} .ci.warn{background:var(--warn)} .ci.fail{background:var(--danger)}
-  .check .ctext{flex:1}
-  .check .csub{display:block;font-size:11px;color:var(--text-2);margin-top:1px}
+      /* Checklist */
+      .checks {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .check {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        font-size: 12.5px;
+        line-height: 1.45;
+      }
+      .check .ci {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .check .ci svg {
+        width: 11px;
+        height: 11px;
+        color: #fff;
+      }
+      .ci.pass {
+        background: var(--safe);
+      }
+      .ci.warn {
+        background: var(--warn);
+      }
+      .ci.fail {
+        background: var(--danger);
+      }
+      .check .ctext {
+        flex: 1;
+      }
+      .check .csub {
+        display: block;
+        font-size: 11px;
+        color: var(--text-2);
+        margin-top: 1px;
+      }
 
-  /* Alert banner */
-  .alert{
-    display:none;align-items:flex-start;gap:10px;background:var(--danger-soft);
-    border:.5px solid #F5C2C2;border-radius:10px;padding:12px;margin-bottom:10px;
-  }
-  .alert.show{display:flex}
-  .alert .alert-icon{
-    width:28px;height:28px;border-radius:8px;background:var(--danger);color:#fff;
-    display:grid;place-items:center;flex-shrink:0;
-  }
-  .alert .alert-icon svg{width:14px;height:14px}
-  .alert .alert-body{flex:1}
-  .alert h4{margin:0 0 4px;font-size:13px;font-weight:700;color:var(--danger)}
-  .alert p{margin:0 0 8px;font-size:12px;color:#7A1F1F;line-height:1.45}
-  .alert .btn-block{
-    background:var(--danger);color:#fff;border:0;font:600 12px 'Inter';padding:7px 12px;
-    border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
-  }
-  .alert .btn-block svg{width:12px;height:12px}
+      /* Alert banner */
+      .alert {
+        display: none;
+        align-items: flex-start;
+        gap: 10px;
+        background: var(--danger-soft);
+        border: 0.5px solid #f5c2c2;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 10px;
+      }
+      .alert.show {
+        display: flex;
+      }
+      .alert .alert-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: var(--danger);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+      }
+      .alert .alert-icon svg {
+        width: 14px;
+        height: 14px;
+      }
+      .alert .alert-body {
+        flex: 1;
+      }
+      .alert h4 {
+        margin: 0 0 4px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--danger);
+      }
+      .alert p {
+        margin: 0 0 8px;
+        font-size: 12px;
+        color: #7a1f1f;
+        line-height: 1.45;
+      }
+      .alert .btn-block {
+        background: var(--danger);
+        color: #fff;
+        border: 0;
+        font: 600 12px "Inter";
+        padding: 7px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .alert .btn-block svg {
+        width: 12px;
+        height: 12px;
+      }
 
-  .reports-badge{
-    display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);
-    border:.5px solid var(--border);padding:5px 9px;border-radius:999px;font-size:11px;color:var(--text);
-    margin-top:10px;
-  }
-  .reports-badge svg{width:12px;height:12px;color:var(--text-2)}
+      .reports-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--surface-2);
+        border: 0.5px solid var(--border);
+        padding: 5px 9px;
+        border-radius: 999px;
+        font-size: 11px;
+        color: var(--text);
+        margin-top: 10px;
+      }
+      .reports-badge svg {
+        width: 12px;
+        height: 12px;
+        color: var(--text-2);
+      }
 
-  /* Tx Interpreter */
-  .tx-perm{
-    background:var(--surface-2);border:.5px solid var(--border);border-radius:10px;padding:10px;margin:8px 0 10px;
-  }
-  .tx-perm .perm-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0}
-  .tx-perm .perm-row + .perm-row{border-top:.5px dashed var(--border)}
-  .tx-perm .perm-key{color:var(--text-2)}
-  .tx-perm .perm-val{font-weight:600;color:var(--text);max-width:60%;text-align:right;word-break:break-all}
-  .badge{
-    display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;
-    padding:3px 8px;border-radius:999px;
-  }
-  .badge.low{background:var(--safe-soft);color:var(--safe)}
-  .badge.med{background:var(--warn-soft);color:#9A6500}
-  .badge.high{background:var(--danger-soft);color:var(--danger)}
-  .badge.crit{background:#1F1F23;color:#fff}
-  .badge.beginner{background:var(--accent-soft);color:var(--accent)}
-  .badge.score-good{background:var(--safe-soft);color:var(--safe)}
-  .badge.score-bad{background:var(--danger-soft);color:var(--danger)}
-  .badge.score-mid{background:var(--warn-soft);color:#9A6500}
+      /* Tx Interpreter */
+      .tx-perm {
+        background: var(--surface-2);
+        border: 0.5px solid var(--border);
+        border-radius: 10px;
+        padding: 10px;
+        margin: 8px 0 10px;
+      }
+      .tx-perm .perm-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        padding: 4px 0;
+      }
+      .tx-perm .perm-row + .perm-row {
+        border-top: 0.5px dashed var(--border);
+      }
+      .tx-perm .perm-key {
+        color: var(--text-2);
+      }
+      .tx-perm .perm-val {
+        font-weight: 600;
+        color: var(--text);
+        max-width: 60%;
+        text-align: right;
+        word-break: break-all;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 999px;
+      }
+      .badge.low {
+        background: var(--safe-soft);
+        color: var(--safe);
+      }
+      .badge.med {
+        background: var(--warn-soft);
+        color: #9a6500;
+      }
+      .badge.high {
+        background: var(--danger-soft);
+        color: var(--danger);
+      }
+      .badge.crit {
+        background: #1f1f23;
+        color: #fff;
+      }
+      .badge.beginner {
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+      .badge.score-good {
+        background: var(--safe-soft);
+        color: var(--safe);
+      }
+      .badge.score-bad {
+        background: var(--danger-soft);
+        color: var(--danger);
+      }
+      .badge.score-mid {
+        background: var(--warn-soft);
+        color: #9a6500;
+      }
 
-  .tx-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px}
-  .tx-actions button{
-    border:0;font:600 12px 'Inter';padding:9px 8px;border-radius:8px;cursor:pointer;
-    display:inline-flex;align-items:center;justify-content:center;gap:5px;transition:opacity .15s ease;
-  }
-  .tx-actions button:hover{opacity:.9}
-  .tx-actions button svg{width:12px;height:12px}
-  .btn-limit{background:var(--surface-2);color:var(--text);border:.5px solid var(--border)!important}
-  .btn-approve{background:var(--safe);color:#fff}
-  .btn-approve.danger{background:var(--danger)}
-  .btn-cancel{background:#fff;color:var(--text);border:.5px solid var(--border)!important}
+      .tx-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 6px;
+        margin-top: 10px;
+      }
+      .tx-actions button {
+        border: 0;
+        font: 600 12px "Inter";
+        padding: 9px 8px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        transition: opacity 0.15s ease;
+      }
+      .tx-actions button:hover {
+        opacity: 0.9;
+      }
+      .tx-actions button svg {
+        width: 12px;
+        height: 12px;
+      }
+      .btn-limit {
+        background: var(--surface-2);
+        color: var(--text);
+        border: 0.5px solid var(--border) !important;
+      }
+      .btn-approve {
+        background: var(--safe);
+        color: #fff;
+      }
+      .btn-approve.danger {
+        background: var(--danger);
+      }
+      .btn-cancel {
+        background: #fff;
+        color: var(--text);
+        border: 0.5px solid var(--border) !important;
+      }
 
-  /* Sandbox card */
-  .sandbox-toggle-row{
-    display:flex;align-items:center;justify-content:space-between;
-    background:var(--accent-soft);border:.5px solid #DCD0FF;border-radius:10px;padding:10px 12px;margin-bottom:10px;
-  }
-  .sandbox-toggle-row .label{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--accent)}
-  .sandbox-toggle-row .label svg{width:14px;height:14px}
-  .switch{position:relative;width:34px;height:20px;background:#fff;border:.5px solid var(--border);border-radius:999px;cursor:pointer;transition:all .15s ease}
-  .switch::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--text-2);transition:all .2s ease}
-  .switch.on{background:var(--accent);border-color:var(--accent)}
-  .switch.on::after{left:17px;background:#fff}
+      /* Sandbox card */
+      .sandbox-toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--accent-soft);
+        border: 0.5px solid #dcd0ff;
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-bottom: 10px;
+      }
+      .sandbox-toggle-row .label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--accent);
+      }
+      .sandbox-toggle-row .label svg {
+        width: 14px;
+        height: 14px;
+      }
+      .switch {
+        position: relative;
+        width: 34px;
+        height: 20px;
+        background: #fff;
+        border: 0.5px solid var(--border);
+        border-radius: 999px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .switch::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--text-2);
+        transition: all 0.2s ease;
+      }
+      .switch.on {
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+      .switch.on::after {
+        left: 17px;
+        background: #fff;
+      }
 
-  .sandbox-status{display:none;flex-direction:column;gap:8px}
-  .sandbox-active-block .sandbox-status{display:flex}
-  .sandbox-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px}
-  .stat{background:var(--surface-2);border:.5px solid var(--border);border-radius:8px;padding:8px;text-align:center}
-  .stat .n{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.02em}
-  .stat .l{font-size:10px;color:var(--text-2);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
-  .stat.flag .n{color:var(--danger)}
-  .btn-debrief{
-    width:100%;background:var(--accent);color:#fff;border:0;font:600 12px 'Inter';
-    padding:10px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;
-  }
-  .btn-debrief svg{width:13px;height:13px}
+      .sandbox-status {
+        display: none;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .sandbox-active-block .sandbox-status {
+        display: flex;
+      }
+      .sandbox-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+      .stat {
+        background: var(--surface-2);
+        border: 0.5px solid var(--border);
+        border-radius: 8px;
+        padding: 8px;
+        text-align: center;
+      }
+      .stat .n {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+        letter-spacing: -0.02em;
+      }
+      .stat .l {
+        font-size: 10px;
+        color: var(--text-2);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-top: 2px;
+      }
+      .stat.flag .n {
+        color: var(--danger);
+      }
+      .btn-debrief {
+        width: 100%;
+        background: var(--accent);
+        color: #fff;
+        border: 0;
+        font: 600 12px "Inter";
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      .btn-debrief svg {
+        width: 13px;
+        height: 13px;
+      }
 
-  /* Discovery */
-  .search-wrap{position:relative;margin-bottom:10px}
-  .search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--text-2)}
-  .search-wrap input{
-    width:100%;padding:9px 10px 9px 32px;border:.5px solid var(--border);border-radius:8px;
-    background:var(--surface-2);font:400 13px 'Inter';color:var(--text);outline:none;transition:all .15s ease;
-  }
-  .search-wrap input:focus{background:#fff;border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,71,255,.12)}
-  .filters{display:flex;gap:5px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none}
-  .filters::-webkit-scrollbar{display:none}
-  .filter{
-    border:.5px solid var(--border);background:#fff;font:500 11px 'Inter';color:var(--text-2);
-    padding:5px 10px;border-radius:999px;cursor:pointer;flex-shrink:0;transition:all .15s ease;
-  }
-  .filter.active,.filter:hover{background:var(--accent);border-color:var(--accent);color:#fff}
-  .discover-card{
-    border:.5px solid var(--border);border-radius:10px;padding:10px;margin-bottom:8px;
-    transition:all .15s ease;cursor:pointer;
-  }
-  .discover-card:hover{background:var(--surface-2)}
-  .dc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
-  .dc-name{font-size:13px;font-weight:600}
-  .dc-meta{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
-  .dc-summary{font-size:11.5px;color:var(--text-2);line-height:1.5;margin-top:6px}
+      /* Discovery */
+      .search-wrap {
+        position: relative;
+        margin-bottom: 10px;
+      }
+      .search-wrap svg {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 14px;
+        height: 14px;
+        color: var(--text-2);
+      }
+      .search-wrap input {
+        width: 100%;
+        padding: 9px 10px 9px 32px;
+        border: 0.5px solid var(--border);
+        border-radius: 8px;
+        background: var(--surface-2);
+        font: 400 13px "Inter";
+        color: var(--text);
+        outline: none;
+        transition: all 0.15s ease;
+      }
+      .search-wrap input:focus {
+        background: #fff;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(108, 71, 255, 0.12);
+      }
+      .filters {
+        display: flex;
+        gap: 5px;
+        margin-bottom: 10px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .filters::-webkit-scrollbar {
+        display: none;
+      }
+      .filter {
+        border: 0.5px solid var(--border);
+        background: #fff;
+        font: 500 11px "Inter";
+        color: var(--text-2);
+        padding: 5px 10px;
+        border-radius: 999px;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: all 0.15s ease;
+      }
+      .filter.active,
+      .filter:hover {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      .discover-card {
+        border: 0.5px solid var(--border);
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 8px;
+        transition: all 0.15s ease;
+        cursor: pointer;
+      }
+      .discover-card:hover {
+        background: var(--surface-2);
+      }
+      .dc-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+      .dc-name {
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .dc-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 6px;
+      }
+      .dc-summary {
+        font-size: 11.5px;
+        color: var(--text-2);
+        line-height: 1.5;
+        margin-top: 6px;
+      }
 
-  /* Community */
-  .sentiment-bar{display:flex;height:6px;border-radius:999px;overflow:hidden;margin:6px 0 4px;background:var(--surface-2)}
-  .sentiment-bar .pos{background:var(--safe)} .sentiment-bar .neg{background:var(--danger)}
-  .sentiment-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--text-2);margin-bottom:10px}
-  .btn-secondary{
-    width:100%;background:#fff;color:var(--text);border:.5px solid var(--border);
-    font:600 12px 'Inter';padding:9px;border-radius:8px;cursor:pointer;
-    display:inline-flex;align-items:center;justify-content:center;gap:6px;margin-bottom:10px;
-  }
-  .btn-secondary:hover{background:var(--surface-2)}
-  .btn-secondary svg{width:13px;height:13px}
-  .report{border:.5px solid var(--border);border-radius:10px;padding:10px;margin-bottom:8px;background:#fff}
-  .report-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
-  .report-user{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
-  .avatar{width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#6C47FF,#9F86FF);color:#fff;display:grid;place-items:center;font-size:9px;font-weight:700}
-  .report-date{font-size:10.5px;color:var(--text-2)}
-  .report-text{font-size:12px;line-height:1.5;color:var(--text);margin:4px 0}
-  .report-foot{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--text-2)}
-  .report-foot svg{width:12px;height:12px}
+      /* Community */
+      .sentiment-bar {
+        display: flex;
+        height: 6px;
+        border-radius: 999px;
+        overflow: hidden;
+        margin: 6px 0 4px;
+        background: var(--surface-2);
+      }
+      .sentiment-bar .pos {
+        background: var(--safe);
+      }
+      .sentiment-bar .neg {
+        background: var(--danger);
+      }
+      .sentiment-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        color: var(--text-2);
+        margin-bottom: 10px;
+      }
+      .btn-secondary {
+        width: 100%;
+        background: #fff;
+        color: var(--text);
+        border: 0.5px solid var(--border);
+        font: 600 12px "Inter";
+        padding: 9px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+      .btn-secondary:hover {
+        background: var(--surface-2);
+      }
+      .btn-secondary svg {
+        width: 13px;
+        height: 13px;
+      }
+      .report {
+        border: 0.5px solid var(--border);
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 8px;
+        background: #fff;
+      }
+      .report-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 4px;
+      }
+      .report-user {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .avatar {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #6c47ff, #9f86ff);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-size: 9px;
+        font-weight: 700;
+      }
+      .report-date {
+        font-size: 10.5px;
+        color: var(--text-2);
+      }
+      .report-text {
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--text);
+        margin: 4px 0;
+      }
+      .report-foot {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 11px;
+        color: var(--text-2);
+      }
+      .report-foot svg {
+        width: 12px;
+        height: 12px;
+      }
 
-  /* 0G card */
-  .og-card{
-    background:linear-gradient(180deg,#FAFAFC,#FFFFFF);
-    border:.5px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px;
-  }
-  .og-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-  .og-title{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
-  .og-title .ogm{width:16px;height:16px;border-radius:4px;background:#0F0F10;color:#fff;display:grid;place-items:center;font-size:8px;font-weight:700}
-  .og-status{font-size:11.5px;color:var(--text-2);line-height:1.5;margin-bottom:8px}
-  .og-status .ok{color:var(--safe);font-weight:600}
-  .og-hash{
-    display:flex;align-items:center;justify-content:space-between;background:var(--surface-2);
-    border:.5px solid var(--border);border-radius:6px;padding:6px 8px;font-family:'SFMono-Regular',Consolas,monospace;
-    font-size:11px;color:var(--text);margin-bottom:8px;
-  }
-  .og-hash svg{width:12px;height:12px;color:var(--text-2);cursor:pointer}
-  .og-foot{display:flex;justify-content:space-between;font-size:10.5px;color:var(--text-2)}
+      /* 0G card */
+      .og-card {
+        background: linear-gradient(180deg, #fafafc, #ffffff);
+        border: 0.5px solid var(--border);
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 10px;
+      }
+      .og-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .og-title {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .og-title .ogm {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        background: #0f0f10;
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-size: 8px;
+        font-weight: 700;
+      }
+      .og-status {
+        font-size: 11.5px;
+        color: var(--text-2);
+        line-height: 1.5;
+        margin-bottom: 8px;
+      }
+      .og-status .ok {
+        color: var(--safe);
+        font-weight: 600;
+      }
+      .og-hash {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--surface-2);
+        border: 0.5px solid var(--border);
+        border-radius: 6px;
+        padding: 6px 8px;
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 11px;
+        color: var(--text);
+        margin-bottom: 8px;
+      }
+      .og-hash svg {
+        width: 12px;
+        height: 12px;
+        color: var(--text-2);
+        cursor: pointer;
+      }
+      .og-foot {
+        display: flex;
+        justify-content: space-between;
+        font-size: 10.5px;
+        color: var(--text-2);
+      }
 
-  /* Bottom action bar (sticky) */
-  .actionbar{
-    border-top:.5px solid var(--border);background:#fff;padding:6px 6px;
-    display:grid;grid-template-columns:repeat(5,1fr);gap:2px;
-  }
-  .tab{
-    display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;
-    border:0;background:transparent;color:var(--text-2);cursor:pointer;border-radius:8px;
-    font:500 10px 'Inter';position:relative;transition:color .15s ease;
-  }
-  .tab svg{width:18px;height:18px}
-  .tab:hover{color:var(--text)}
-  .tab.active{color:var(--accent)}
-  .tab.active::after{
-    content:"";position:absolute;bottom:-6px;left:25%;right:25%;height:2px;border-radius:2px;background:var(--accent);
-  }
+      /* Bottom action bar (sticky) */
+      .actionbar {
+        border-top: 0.5px solid var(--border);
+        background: #fff;
+        padding: 6px 6px;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 2px;
+      }
+      .tab {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        padding: 8px 4px;
+        border: 0;
+        background: transparent;
+        color: var(--text-2);
+        cursor: pointer;
+        border-radius: 8px;
+        font: 500 10px "Inter";
+        position: relative;
+        transition: color 0.15s ease;
+      }
+      .tab svg {
+        width: 18px;
+        height: 18px;
+      }
+      .tab:hover {
+        color: var(--text);
+      }
+      .tab.active {
+        color: var(--accent);
+      }
+      .tab.active::after {
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        left: 25%;
+        right: 25%;
+        height: 2px;
+        border-radius: 2px;
+        background: var(--accent);
+      }
 
-  /* Sections show/hide by tab */
-  .zone{display:none}
-  .zone.show{display:block}
+      /* Sections show/hide by tab */
+      .zone {
+        display: none;
+      }
+      .zone.show {
+        display: block;
+      }
 
-  /* Modal */
-  .modal-overlay{
-    position:absolute;inset:0;background:rgba(15,15,16,.45);
-    display:none;align-items:flex-end;justify-content:center;z-index:20;
-    backdrop-filter:blur(2px);
-  }
-  .modal-overlay.show{display:flex}
-  .modal{
-    background:#fff;border-top-left-radius:14px;border-top-right-radius:14px;
-    width:100%;max-height:92%;overflow-y:auto;padding:16px;
-    animation:slideUp .25s ease;
-  }
-  @keyframes slideUp{from{transform:translateY(20px);opacity:.5}to{transform:translateY(0);opacity:1}}
-  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-  .modal-head h2{margin:0;font-size:15px;font-weight:700}
-  .modal-verdict{
-    border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px;margin-bottom:12px;
-    background:var(--danger-soft);color:#7A1F1F;border:.5px solid #F5C2C2;
-  }
-  .modal-verdict.safe{background:var(--safe-soft);color:#0E5C2C;border-color:#BFE7CC}
-  .modal-verdict svg{width:18px;height:18px;flex-shrink:0}
-  .modal-verdict .vt{font-weight:700;font-size:13px}
-  .modal-verdict .vd{font-size:12px;line-height:1.45;margin-top:2px}
-  .timeline{margin:0;padding:0;list-style:none;border-left:1.5px solid var(--border);margin-left:8px;padding-left:14px}
-  .timeline li{position:relative;padding:6px 0 10px;font-size:12.5px}
-  .timeline li::before{
-    content:"";position:absolute;left:-21px;top:10px;width:10px;height:10px;border-radius:50%;background:var(--surface-2);border:2px solid #fff;box-shadow:0 0 0 1px var(--border);
-  }
-  .timeline li.risk-high::before{background:var(--danger)}
-  .timeline li.risk-med::before{background:var(--warn)}
-  .timeline li.risk-low::before{background:var(--safe)}
-  .tl-action{font-weight:600;color:var(--text)}
-  .tl-detail{font-size:11.5px;color:var(--text-2);margin-top:2px;line-height:1.5}
-  .tl-time{font-size:10.5px;color:var(--text-2);margin-left:8px;font-weight:500}
-  .modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
-  .modal-actions button{
-    border:0;font:600 12px 'Inter';padding:10px;border-radius:8px;cursor:pointer;
-    display:inline-flex;align-items:center;justify-content:center;gap:6px;
-  }
-  .modal-actions .ma-block{background:var(--danger);color:#fff;grid-column:1/-1}
-  .modal-actions .ma-report{background:var(--surface-2);color:var(--text);border:.5px solid var(--border)!important}
-  .modal-actions .ma-proceed{background:#fff;color:var(--text);border:.5px solid var(--border)!important}
-  .modal-actions button svg{width:13px;height:13px}
+      /* Modal */
+      .modal-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 15, 16, 0.45);
+        display: none;
+        align-items: flex-end;
+        justify-content: center;
+        z-index: 20;
+        backdrop-filter: blur(2px);
+      }
+      .modal-overlay.show {
+        display: flex;
+      }
+      .modal {
+        background: #fff;
+        border-top-left-radius: 14px;
+        border-top-right-radius: 14px;
+        width: 100%;
+        max-height: 92%;
+        overflow-y: auto;
+        padding: 16px;
+        animation: slideUp 0.25s ease;
+      }
+      @keyframes slideUp {
+        from {
+          transform: translateY(20px);
+          opacity: 0.5;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      .modal-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .modal-head h2 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 700;
+      }
+      .modal-verdict {
+        border-radius: 10px;
+        padding: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+        background: var(--danger-soft);
+        color: #7a1f1f;
+        border: 0.5px solid #f5c2c2;
+      }
+      .modal-verdict.safe {
+        background: var(--safe-soft);
+        color: #0e5c2c;
+        border-color: #bfe7cc;
+      }
+      .modal-verdict svg {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+      }
+      .modal-verdict .vt {
+        font-weight: 700;
+        font-size: 13px;
+      }
+      .modal-verdict .vd {
+        font-size: 12px;
+        line-height: 1.45;
+        margin-top: 2px;
+      }
+      .timeline {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        border-left: 1.5px solid var(--border);
+        margin-left: 8px;
+        padding-left: 14px;
+      }
+      .timeline li {
+        position: relative;
+        padding: 6px 0 10px;
+        font-size: 12.5px;
+      }
+      .timeline li::before {
+        content: "";
+        position: absolute;
+        left: -21px;
+        top: 10px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--surface-2);
+        border: 2px solid #fff;
+        box-shadow: 0 0 0 1px var(--border);
+      }
+      .timeline li.risk-high::before {
+        background: var(--danger);
+      }
+      .timeline li.risk-med::before {
+        background: var(--warn);
+      }
+      .timeline li.risk-low::before {
+        background: var(--safe);
+      }
+      .tl-action {
+        font-weight: 600;
+        color: var(--text);
+      }
+      .tl-detail {
+        font-size: 11.5px;
+        color: var(--text-2);
+        margin-top: 2px;
+        line-height: 1.5;
+      }
+      .tl-time {
+        font-size: 10.5px;
+        color: var(--text-2);
+        margin-left: 8px;
+        font-weight: 500;
+      }
+      .modal-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 14px;
+      }
+      .modal-actions button {
+        border: 0;
+        font: 600 12px "Inter";
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      .modal-actions .ma-block {
+        background: var(--danger);
+        color: #fff;
+        grid-column: 1/-1;
+      }
+      .modal-actions .ma-report {
+        background: var(--surface-2);
+        color: var(--text);
+        border: 0.5px solid var(--border) !important;
+      }
+      .modal-actions .ma-proceed {
+        background: #fff;
+        color: var(--text);
+        border: 0.5px solid var(--border) !important;
+      }
+      .modal-actions button svg {
+        width: 13px;
+        height: 13px;
+      }
 
-  /* Score ring colors via stroke */
-  .ring-track{stroke:var(--surface-2)}
-  .ring-fill.green{stroke:var(--safe)}
-  .ring-fill.amber{stroke:var(--warn)}
-  .ring-fill.red{stroke:var(--danger)}
+      /* Score ring colors via stroke */
+      .ring-track {
+        stroke: var(--surface-2);
+      }
+      .ring-fill.green {
+        stroke: var(--safe);
+      }
+      .ring-fill.amber {
+        stroke: var(--warn);
+      }
+      .ring-fill.red {
+        stroke: var(--danger);
+      }
 
-  /* Page wrapper for preview backdrop */
-  .preview-frame{
-    width:380px;min-height:100vh;background:var(--bg);position:relative;
-  }
-  /* Before-You-Sign empty + pending states */
-  .tx-empty{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:6px 0 2px}
-  .tx-empty-icon{
-    width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;
-    background:rgba(120,140,170,.10);color:var(--muted);margin-bottom:4px;
-  }
-  .tx-empty-icon i{width:16px;height:16px}
-  #txCard.pending{
-    border-color:var(--warn);box-shadow:0 0 0 3px rgba(245,158,11,.18);
-    animation:txPulse 1.6s ease-out 1;
-  }
-  #txCard.pending.crit{
-    border-color:var(--danger);box-shadow:0 0 0 3px rgba(239,68,68,.22);
-  }
-  @keyframes txPulse{
-    0%{box-shadow:0 0 0 0 rgba(245,158,11,.55)}
-    100%{box-shadow:0 0 0 14px rgba(245,158,11,0)}
-  }
-  #txPendingPill.crit{background:rgba(239,68,68,.15);color:var(--danger)}
-  [data-sim-btn]{
-    font-size:10px;padding:4px 8px;border-radius:6px;border:1px dashed var(--border);
-    background:transparent;color:var(--muted);cursor:pointer;
-  }
-  [data-sim-btn]:hover{color:var(--text);border-color:var(--muted)}
-</style>
-</head>
-<body>
-
-<div class="preview-frame">
-  <div class="sidebar" id="sidebar">
-
-    <!-- ===== HEADER ===== -->
-    <header class="header">
-      <div class="header-top">
-        <div class="brand">
-          <div class="brand-mark"><i data-lucide="shield-check"></i></div>
-          <div class="brand-name">Aegis <span>/ Trust Layer</span></div>
-          <span class="sandbox-badge"><i data-lucide="flask-conical"></i> Sandbox Active</span>
-        </div>
-        <div class="header-actions">
-          <button class="icon-btn" title="Refresh analysis"><i data-lucide="refresh-cw"></i></button>
-          <button class="icon-btn" title="Settings"><i data-lucide="settings"></i></button>
-        </div>
-      </div>
-
-      <div class="state-toggle" role="tablist" aria-label="Demo states">
-        <button data-state-btn="safe" class="active">Safe</button>
-        <button data-state-btn="risky">Risky</button>
-        <button data-state-btn="sandbox">Sandbox</button>
-        <button data-sim-btn="approve" title="Simulate an ERC-20 approve() signing request">⚑ Sim sign</button>
-        <button data-sim-btn="drain"   title="Simulate a setApprovalForAll drainer request">⚑ Sim drain</button>
-      </div>
-
-      <div class="site-row">
-        <div class="site-favicon" id="siteFavicon">U</div>
-        <div class="site-info">
-          <div class="site-domain" id="siteDomain">app.uniswap.org</div>
-          <div class="site-meta">
-            <span class="live-dot" id="liveDot"></span>
-            <span id="siteCategory">DEX · Ethereum, 8 chains</span>
+      /* Page wrapper for preview backdrop */
+      .preview-frame {
+        width: 380px;
+        min-height: 100vh;
+        background: var(--bg);
+        position: relative;
+      }
+      /* Before-You-Sign empty + pending states */
+      .tx-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+        padding: 6px 0 2px;
+      }
+      .tx-empty-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(120, 140, 170, 0.1);
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+      .tx-empty-icon i {
+        width: 16px;
+        height: 16px;
+      }
+      #txCard.pending {
+        border-color: var(--warn);
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+        animation: txPulse 1.6s ease-out 1;
+      }
+      #txCard.pending.crit {
+        border-color: var(--danger);
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.22);
+      }
+      @keyframes txPulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.55);
+        }
+        100% {
+          box-shadow: 0 0 0 14px rgba(245, 158, 11, 0);
+        }
+      }
+      #txPendingPill.crit {
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--danger);
+      }
+      [data-sim-btn] {
+        font-size: 10px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        border: 1px dashed var(--border);
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+      }
+      [data-sim-btn]:hover {
+        color: var(--text);
+        border-color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="preview-frame">
+      <div class="sidebar" id="sidebar">
+        <!-- ===== HEADER ===== -->
+        <header class="header">
+          <div class="header-top">
+            <div class="brand">
+              <div class="brand-mark"><i data-lucide="shield-check"></i></div>
+              <div class="brand-name">Aegis <span>/ Trust Layer</span></div>
+              <span class="sandbox-badge"><i data-lucide="flask-conical"></i> Sandbox Active</span>
+            </div>
+            <div class="header-actions">
+              <button class="icon-btn" title="Refresh analysis">
+                <i data-lucide="refresh-cw"></i>
+              </button>
+              <button class="icon-btn" title="Settings"><i data-lucide="settings"></i></button>
+            </div>
           </div>
-        </div>
-        <div class="score-wrap" data-score="95">
-          <svg width="52" height="52" viewBox="0 0 52 52">
-            <circle class="ring-track" cx="26" cy="26" r="22" fill="none" stroke-width="5"></circle>
-            <circle id="scoreRing" class="ring-fill green" cx="26" cy="26" r="22" fill="none" stroke-width="5"
-              stroke-linecap="round" stroke-dasharray="138.23" stroke-dashoffset="6.91"></circle>
-          </svg>
-          <div class="score-num" id="scoreNum">95</div>
-        </div>
-      </div>
 
-      <div class="status-pills" id="statusPills">
-        <span class="status-pill"><span class="dot green"></span> Community Trust</span>
-        <span class="status-pill"><span class="dot green"></span> New User Friendly</span>
-        <span class="status-pill"><span class="dot green"></span> Audited</span>
-      </div>
+          <div class="state-toggle" role="tablist" aria-label="Demo states">
+            <button data-state-btn="safe" class="active">Safe</button>
+            <button data-state-btn="risky">Risky</button>
+            <button data-state-btn="sandbox">Sandbox</button>
+            <button data-sim-btn="approve" title="Simulate an ERC-20 approve() signing request">
+              ⚑ Sim sign
+            </button>
+            <button data-sim-btn="drain" title="Simulate a setApprovalForAll drainer request">
+              ⚑ Sim drain
+            </button>
+          </div>
 
-      <div class="ai-summary" id="aiSummary">
-        Established decentralized exchange. No suspicious signals detected. Trusted by 4.2M wallets.
-      </div>
-    </header>
+          <div class="site-row">
+            <div class="site-favicon" id="siteFavicon">U</div>
+            <div class="site-info">
+              <div class="site-domain" id="siteDomain">app.uniswap.org</div>
+              <div class="site-meta">
+                <span class="live-dot" id="liveDot"></span>
+                <span id="siteCategory">DEX · Ethereum, 8 chains</span>
+              </div>
+            </div>
+            <div class="score-wrap" data-score="95">
+              <svg width="52" height="52" viewBox="0 0 52 52">
+                <circle
+                  class="ring-track"
+                  cx="26"
+                  cy="26"
+                  r="22"
+                  fill="none"
+                  stroke-width="5"
+                ></circle>
+                <circle
+                  id="scoreRing"
+                  class="ring-fill green"
+                  cx="26"
+                  cy="26"
+                  r="22"
+                  fill="none"
+                  stroke-width="5"
+                  stroke-linecap="round"
+                  stroke-dasharray="138.23"
+                  stroke-dashoffset="6.91"
+                ></circle>
+              </svg>
+              <div class="score-num" id="scoreNum">95</div>
+            </div>
+          </div>
 
-    <!-- ===== SCROLL CONTENT ===== -->
-    <div class="scroll">
+          <div class="status-pills" id="statusPills">
+            <span class="status-pill"><span class="dot green"></span> Community Trust</span>
+            <span class="status-pill"><span class="dot green"></span> New User Friendly</span>
+            <span class="status-pill"><span class="dot green"></span> Audited</span>
+          </div>
 
-      <!-- ===== ZONE: OVERVIEW (combines Explainer + 0G + small Community summary) ===== -->
-      <section class="zone show" data-tab="overview">
+          <div class="ai-summary" id="aiSummary">
+            Established decentralized exchange. No suspicious signals detected. Trusted by 4.2M
+            wallets.
+          </div>
+        </header>
 
-        <!-- Zone 2: Site Explainer -->
-        <div class="card" data-zone="site-explainer" data-state="populated">
-          <h3><i data-lucide="book-open"></i> What is this site?</h3>
-          <p id="explainerText">
-            Uniswap is one of the largest decentralized exchanges on Ethereum, letting you swap tokens directly from your wallet without intermediaries.
-          </p>
-          <div class="sub-label">What am I being asked to do?</div>
-          <p class="muted" id="explainerAction">
-            The page is offering token swaps. Connecting your wallet allows the site to read balances and request swap signatures — it cannot move funds without your approval.
-          </p>
-          <details class="expander">
-            <summary>Technical details <i data-lucide="chevron-down"></i></summary>
-            <pre id="explainerTech">Router: 0xE592427A0AEce92De3Edee1F18E0157C05861564
+        <!-- ===== SCROLL CONTENT ===== -->
+        <div class="scroll">
+          <!-- ===== ZONE: OVERVIEW (combines Explainer + 0G + small Community summary) ===== -->
+          <section class="zone show" data-tab="overview">
+            <!-- Zone 2: Site Explainer -->
+            <div class="card" data-zone="site-explainer" data-state="populated">
+              <h3><i data-lucide="book-open"></i> What is this site?</h3>
+              <p id="explainerText">
+                Uniswap is one of the largest decentralized exchanges on Ethereum, letting you swap
+                tokens directly from your wallet without intermediaries.
+              </p>
+              <div class="sub-label">What am I being asked to do?</div>
+              <p class="muted" id="explainerAction">
+                The page is offering token swaps. Connecting your wallet allows the site to read
+                balances and request swap signatures — it cannot move funds without your approval.
+              </p>
+              <details class="expander">
+                <summary>Technical details <i data-lucide="chevron-down"></i></summary>
+                <pre id="explainerTech">
+Router: 0xE592427A0AEce92De3Edee1F18E0157C05861564
 Frontend: Vercel · IPFS mirror available
 Smart-contract framework: UniversalRouter v1.2
-Network calls: wss://mainnet.infura.io, https://api.uniswap.org</pre>
-          </details>
-        </div>
-
-        <!-- 0G Knowledge Graph -->
-        <div class="og-card" data-zone="0g-graph">
-          <div class="og-head">
-            <div class="og-title"><span class="ogm">0G</span> Powered by 0G Network</div>
-            <span class="badge low" id="ogBadge">Cached</span>
-          </div>
-          <div class="og-status" id="ogStatus">
-            <span class="ok">✓ Analysis retrieved</span> from decentralized knowledge graph in 142ms.
-          </div>
-          <div class="og-hash">
-            <span id="ogHash">0xa3f1…b7c2e9</span>
-            <i data-lucide="external-link"></i>
-          </div>
-          <div class="og-foot">
-            <span><i data-lucide="network" style="width:10px;height:10px;display:inline"></i> 1,284 nodes</span>
-            <span id="ogUpdated">Updated 4 min ago</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===== ZONE: SCAN (Scam Detector + Tx Interpreter) ===== -->
-      <section class="zone" data-tab="scan">
-
-        <!-- Alert banner (high risk) -->
-        <div class="alert" id="riskAlert">
-          <div class="alert-icon"><i data-lucide="alert-triangle"></i></div>
-          <div class="alert-body">
-            <h4>High risk — likely scam</h4>
-            <p id="alertText">This site impersonates a known protocol and was deployed 4 hours ago. Do not connect your wallet.</p>
-            <button class="btn-block" onclick="console.log('block site')"><i data-lucide="ban"></i> Block this site</button>
-          </div>
-        </div>
-
-        <!-- Zone 3: Scam Detector -->
-        <div class="card" data-zone="scam-detector" data-state="populated">
-          <h3><i data-lucide="scan-search"></i> Risk Analysis</h3>
-          <div class="threat-meta">
-            <span>Overall threat level</span>
-            <span id="threatLevel" style="color:var(--safe);font-weight:600">Very Low</span>
-          </div>
-          <div class="threat-bar"><div class="threat-bar-fill" id="threatFill" style="width:8%;background:var(--safe)"></div></div>
-
-          <ul class="checks" id="checksList">
-            <!-- populated by JS -->
-          </ul>
-
-          <span class="reports-badge"><i data-lucide="flag"></i> <span id="reportCount">3</span> community reports</span>
-        </div>
-
-        <!-- Zone 4: Transaction Interpreter -->
-        <div class="card" data-zone="tx-interpreter" data-state="empty" id="txCard">
-          <h3>
-            <i data-lucide="pen-line"></i> Before You Sign
-            <span class="badge low" id="txPendingPill" style="margin-left:auto;display:none">● Pending</span>
-          </h3>
-
-          <!-- Empty state: no pending signature -->
-          <div id="txEmpty" class="tx-empty">
-            <div class="tx-empty-icon"><i data-lucide="shield"></i></div>
-            <p class="muted" style="margin:6px 0 2px">No pending signature request.</p>
-            <p class="muted" style="font-size:11px">Aegis is watching this tab. The moment the site asks your wallet to sign anything, the request will be intercepted and explained here before it reaches MetaMask.</p>
-          </div>
-
-          <!-- Populated state -->
-          <div id="txBody" style="display:none">
-            <p class="card-title" id="txTitle">Approve USDC for spending</p>
-            <p class="muted" id="txPlain">
-              This contract is requesting permission to move your USDC. You can set a custom spend limit instead of unlimited approval.
-            </p>
-
-            <div class="tx-perm">
-              <div class="perm-row"><span class="perm-key">Action</span><span class="perm-val" id="txAction">ERC-20 approve()</span></div>
-              <div class="perm-row"><span class="perm-key">Token</span><span class="perm-val" id="txToken">USDC</span></div>
-              <div class="perm-row"><span class="perm-key">Spender</span><span class="perm-val" id="txSpender">0xE592…1564 (Uniswap Router)</span></div>
-              <div class="perm-row"><span class="perm-key">Limit</span><span class="perm-val" id="txLimit">Unlimited ⚠</span></div>
-              <div class="perm-row"><span class="perm-key">Network fee</span><span class="perm-val" id="txFee">~$2.40</span></div>
+Network calls: wss://mainnet.infura.io, https://api.uniswap.org</pre
+                >
+              </details>
             </div>
 
-            <span class="badge low" id="txRisk">Low risk</span>
+            <!-- 0G Knowledge Graph -->
+            <div class="og-card" data-zone="0g-graph">
+              <div class="og-head">
+                <div class="og-title"><span class="ogm">0G</span> Powered by 0G Network</div>
+                <span class="badge low" id="ogBadge">Cached</span>
+              </div>
+              <div class="og-status" id="ogStatus">
+                <span class="ok">✓ Analysis retrieved</span> from decentralized knowledge graph in
+                142ms.
+              </div>
+              <div class="og-hash">
+                <span id="ogHash">0xa3f1…b7c2e9</span>
+                <i data-lucide="external-link"></i>
+              </div>
+              <div class="og-foot">
+                <span
+                  ><i data-lucide="network" style="width: 10px; height: 10px; display: inline"></i>
+                  1,284 nodes</span
+                >
+                <span id="ogUpdated">Updated 4 min ago</span>
+              </div>
+            </div>
+          </section>
 
-            <div class="tx-actions">
-              <button class="btn-limit" id="txSetLimit"><i data-lucide="sliders-horizontal"></i> Set Limit</button>
-              <button class="btn-approve" id="txApprove"><i data-lucide="check"></i> Approve</button>
-              <button class="btn-cancel" id="txCancel"><i data-lucide="x"></i> Cancel</button>
+          <!-- ===== ZONE: SCAN (Scam Detector + Tx Interpreter) ===== -->
+          <section class="zone" data-tab="scan">
+            <!-- Alert banner (high risk) -->
+            <div class="alert" id="riskAlert">
+              <div class="alert-icon"><i data-lucide="alert-triangle"></i></div>
+              <div class="alert-body">
+                <h4>High risk — likely scam</h4>
+                <p id="alertText">
+                  This site impersonates a known protocol and was deployed 4 hours ago. Do not
+                  connect your wallet.
+                </p>
+                <button class="btn-block" onclick="console.log('block site')">
+                  <i data-lucide="ban"></i> Block this site
+                </button>
+              </div>
             </div>
 
-            <details class="expander">
-              <summary>Raw transaction data <i data-lucide="chevron-down"></i></summary>
-              <pre id="txRaw">to:    0xA0b8…eB48
+            <!-- Zone 3: Scam Detector -->
+            <div class="card" data-zone="scam-detector" data-state="populated">
+              <h3><i data-lucide="scan-search"></i> Risk Analysis</h3>
+              <div class="threat-meta">
+                <span>Overall threat level</span>
+                <span id="threatLevel" style="color: var(--safe); font-weight: 600">Very Low</span>
+              </div>
+              <div class="threat-bar">
+                <div
+                  class="threat-bar-fill"
+                  id="threatFill"
+                  style="width: 8%; background: var(--safe)"
+                ></div>
+              </div>
+
+              <ul class="checks" id="checksList">
+                <!-- populated by JS -->
+              </ul>
+
+              <span class="reports-badge"
+                ><i data-lucide="flag"></i> <span id="reportCount">3</span> community reports</span
+              >
+            </div>
+
+            <!-- Zone 4: Transaction Interpreter -->
+            <div class="card" data-zone="tx-interpreter" data-state="empty" id="txCard">
+              <h3>
+                <i data-lucide="pen-line"></i> Before You Sign
+                <span class="badge low" id="txPendingPill" style="margin-left: auto; display: none"
+                  >● Pending</span
+                >
+              </h3>
+
+              <!-- Empty state: no pending signature -->
+              <div id="txEmpty" class="tx-empty">
+                <div class="tx-empty-icon"><i data-lucide="shield"></i></div>
+                <p class="muted" style="margin: 6px 0 2px">No pending signature request.</p>
+                <p class="muted" style="font-size: 11px">
+                  Aegis is watching this tab. The moment the site asks your wallet to sign anything,
+                  the request will be intercepted and explained here before it reaches MetaMask.
+                </p>
+              </div>
+
+              <!-- Populated state -->
+              <div id="txBody" style="display: none">
+                <p class="card-title" id="txTitle">Approve USDC for spending</p>
+                <p class="muted" id="txPlain">
+                  This contract is requesting permission to move your USDC. You can set a custom
+                  spend limit instead of unlimited approval.
+                </p>
+
+                <div class="tx-perm">
+                  <div class="perm-row">
+                    <span class="perm-key">Action</span
+                    ><span class="perm-val" id="txAction">ERC-20 approve()</span>
+                  </div>
+                  <div class="perm-row">
+                    <span class="perm-key">Token</span
+                    ><span class="perm-val" id="txToken">USDC</span>
+                  </div>
+                  <div class="perm-row">
+                    <span class="perm-key">Spender</span
+                    ><span class="perm-val" id="txSpender">0xE592…1564 (Uniswap Router)</span>
+                  </div>
+                  <div class="perm-row">
+                    <span class="perm-key">Limit</span
+                    ><span class="perm-val" id="txLimit">Unlimited ⚠</span>
+                  </div>
+                  <div class="perm-row">
+                    <span class="perm-key">Network fee</span
+                    ><span class="perm-val" id="txFee">~$2.40</span>
+                  </div>
+                </div>
+
+                <span class="badge low" id="txRisk">Low risk</span>
+
+                <div class="tx-actions">
+                  <button class="btn-limit" id="txSetLimit">
+                    <i data-lucide="sliders-horizontal"></i> Set Limit
+                  </button>
+                  <button class="btn-approve" id="txApprove">
+                    <i data-lucide="check"></i> Approve
+                  </button>
+                  <button class="btn-cancel" id="txCancel"><i data-lucide="x"></i> Cancel</button>
+                </div>
+
+                <details class="expander">
+                  <summary>Raw transaction data <i data-lucide="chevron-down"></i></summary>
+                  <pre id="txRaw">
+to:    0xA0b8…eB48
 data:  0x095ea7b3000000000000000000000000e592...
 value: 0
 gas:   46211
-nonce: 142</pre>
-            </details>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===== ZONE: SANDBOX ===== -->
-      <section class="zone" data-tab="sandbox">
-        <div class="card" data-zone="sandbox">
-          <h3><i data-lucide="flask-conical"></i> Sandbox Mode</h3>
-
-          <div class="sandbox-toggle-row">
-            <div class="label"><i data-lucide="flask-conical"></i> Run this site in a sandbox</div>
-            <div class="switch" id="sandboxSwitch" role="switch" aria-checked="false"></div>
-          </div>
-
-          <p class="muted">
-            Sandbox Mode simulates every action against a forked chain. You'll see exactly what the site tries to do — including hidden calls — before anything reaches your real wallet.
-          </p>
-
-          <div class="sandbox-active-block" id="sandboxBlock">
-            <div class="sandbox-status">
-              <div class="sandbox-stats">
-                <div class="stat"><div class="n" id="sbActions">7</div><div class="l">Sim Actions</div></div>
-                <div class="stat"><div class="n" id="sbHidden">2</div><div class="l">Hidden Calls</div></div>
-                <div class="stat flag"><div class="n" id="sbFlags">3</div><div class="l">Flags</div></div>
+nonce: 142</pre
+                  >
+                </details>
               </div>
-              <button class="btn-debrief" onclick="openDebrief()">
-                <i data-lucide="file-text"></i> View Debrief
+            </div>
+          </section>
+
+          <!-- ===== ZONE: SANDBOX ===== -->
+          <section class="zone" data-tab="sandbox">
+            <div class="card" data-zone="sandbox">
+              <h3><i data-lucide="flask-conical"></i> Sandbox Mode</h3>
+
+              <div class="sandbox-toggle-row">
+                <div class="label">
+                  <i data-lucide="flask-conical"></i> Run this site in a sandbox
+                </div>
+                <div class="switch" id="sandboxSwitch" role="switch" aria-checked="false"></div>
+              </div>
+
+              <p class="muted">
+                Sandbox Mode simulates every action against a forked chain. You'll see exactly what
+                the site tries to do — including hidden calls — before anything reaches your real
+                wallet.
+              </p>
+
+              <div class="sandbox-active-block" id="sandboxBlock">
+                <div class="sandbox-status">
+                  <div class="sandbox-stats">
+                    <div class="stat">
+                      <div class="n" id="sbActions">7</div>
+                      <div class="l">Sim Actions</div>
+                    </div>
+                    <div class="stat">
+                      <div class="n" id="sbHidden">2</div>
+                      <div class="l">Hidden Calls</div>
+                    </div>
+                    <div class="stat flag">
+                      <div class="n" id="sbFlags">3</div>
+                      <div class="l">Flags</div>
+                    </div>
+                  </div>
+                  <button class="btn-debrief" onclick="openDebrief()">
+                    <i data-lucide="file-text"></i> View Debrief
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===== ZONE: DISCOVER ===== -->
+          <section class="zone" data-tab="discover">
+            <div class="card" data-zone="discovery">
+              <h3><i data-lucide="compass"></i> Discovery Engine</h3>
+
+              <div class="search-wrap">
+                <i data-lucide="search"></i>
+                <input type="text" placeholder="Find a Web3 tool…" />
+              </div>
+
+              <div class="filters">
+                <button class="filter active">All</button>
+                <button class="filter">DeFi</button>
+                <button class="filter">NFT</button>
+                <button class="filter">Bridge</button>
+                <button class="filter">Wallet</button>
+                <button class="filter">DEX</button>
+              </div>
+
+              <div class="discover-card">
+                <div class="dc-top">
+                  <div>
+                    <div class="dc-name">Aave v3</div>
+                    <div class="muted" style="font-size: 11px">aave.com · Lending</div>
+                  </div>
+                  <span class="badge score-good">92</span>
+                </div>
+                <div class="dc-meta">
+                  <span class="badge low">Ethereum +6</span>
+                  <span class="badge low">Fees: 0.05%</span>
+                  <span class="badge beginner">Beginner</span>
+                </div>
+                <div class="dc-summary">
+                  Audited lending market. Supply assets to earn yield or borrow against collateral.
+                  Strong track record since 2020.
+                </div>
+              </div>
+
+              <div class="discover-card">
+                <div class="dc-top">
+                  <div>
+                    <div class="dc-name">Hop Protocol</div>
+                    <div class="muted" style="font-size: 11px">hop.exchange · Bridge</div>
+                  </div>
+                  <span class="badge score-mid">76</span>
+                </div>
+                <div class="dc-meta">
+                  <span class="badge low">L2 Bridges</span>
+                  <span class="badge low">Fees: ~0.04%</span>
+                  <span class="badge med">Intermediate</span>
+                </div>
+                <div class="dc-summary">
+                  Cross-rollup bridge for ETH, USDC, DAI. Faster than canonical bridges. Mind
+                  liquidity on smaller chains.
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===== ZONE: COMMUNITY ===== -->
+          <section class="zone" data-tab="community">
+            <div class="card" data-zone="community">
+              <h3><i data-lucide="users"></i> Community Reports</h3>
+              <p class="muted" id="commVerdict">
+                128 reports. <strong style="color: var(--safe)">96% positive</strong>. Primary
+                concern: occasional high gas during volatile markets.
+              </p>
+
+              <div class="sentiment-bar">
+                <div class="pos" style="width: 96%"></div>
+                <div class="neg" style="width: 4%"></div>
+              </div>
+              <div class="sentiment-meta"><span>Positive 96%</span><span>Negative 4%</span></div>
+
+              <button class="btn-secondary" onclick="console.log('submit report')">
+                <i data-lucide="message-square-plus"></i> Submit a Report
               </button>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      <!-- ===== ZONE: DISCOVER ===== -->
-      <section class="zone" data-tab="discover">
-        <div class="card" data-zone="discovery">
-          <h3><i data-lucide="compass"></i> Discovery Engine</h3>
-
-          <div class="search-wrap">
-            <i data-lucide="search"></i>
-            <input type="text" placeholder="Find a Web3 tool…" />
-          </div>
-
-          <div class="filters">
-            <button class="filter active">All</button>
-            <button class="filter">DeFi</button>
-            <button class="filter">NFT</button>
-            <button class="filter">Bridge</button>
-            <button class="filter">Wallet</button>
-            <button class="filter">DEX</button>
-          </div>
-
-          <div class="discover-card">
-            <div class="dc-top">
-              <div>
-                <div class="dc-name">Aave v3</div>
-                <div class="muted" style="font-size:11px">aave.com · Lending</div>
+              <div class="report">
+                <div class="report-head">
+                  <div class="report-user">
+                    <div class="avatar">0x</div>
+                    0x7a…F31
+                  </div>
+                  <span class="report-date">2 days ago</span>
+                </div>
+                <p class="report-text">
+                  Smooth swap on Arbitrum, gas was reasonable. Confirmed legit frontend via ENS
+                  resolver.
+                </p>
+                <div class="report-foot"><i data-lucide="thumbs-up"></i> 42 helpful</div>
               </div>
-              <span class="badge score-good">92</span>
-            </div>
-            <div class="dc-meta">
-              <span class="badge low">Ethereum +6</span>
-              <span class="badge low">Fees: 0.05%</span>
-              <span class="badge beginner">Beginner</span>
-            </div>
-            <div class="dc-summary">Audited lending market. Supply assets to earn yield or borrow against collateral. Strong track record since 2020.</div>
-          </div>
-
-          <div class="discover-card">
-            <div class="dc-top">
-              <div>
-                <div class="dc-name">Hop Protocol</div>
-                <div class="muted" style="font-size:11px">hop.exchange · Bridge</div>
+              <div class="report">
+                <div class="report-head">
+                  <div class="report-user">
+                    <div class="avatar">vn</div>
+                    vault.eth
+                  </div>
+                  <span class="report-date">5 days ago</span>
+                </div>
+                <p class="report-text">
+                  Used the new Universal Router for a multi-hop. Worked as expected, but
+                  double-check slippage on low-cap tokens.
+                </p>
+                <div class="report-foot"><i data-lucide="thumbs-up"></i> 17 helpful</div>
               </div>
-              <span class="badge score-mid">76</span>
             </div>
-            <div class="dc-meta">
-              <span class="badge low">L2 Bridges</span>
-              <span class="badge low">Fees: ~0.04%</span>
-              <span class="badge med">Intermediate</span>
-            </div>
-            <div class="dc-summary">Cross-rollup bridge for ETH, USDC, DAI. Faster than canonical bridges. Mind liquidity on smaller chains.</div>
-          </div>
+          </section>
         </div>
-      </section>
 
-      <!-- ===== ZONE: COMMUNITY ===== -->
-      <section class="zone" data-tab="community">
-        <div class="card" data-zone="community">
-          <h3><i data-lucide="users"></i> Community Reports</h3>
-          <p class="muted" id="commVerdict">
-            128 reports. <strong style="color:var(--safe)">96% positive</strong>. Primary concern: occasional high gas during volatile markets.
-          </p>
-
-          <div class="sentiment-bar">
-            <div class="pos" style="width:96%"></div>
-            <div class="neg" style="width:4%"></div>
-          </div>
-          <div class="sentiment-meta"><span>Positive 96%</span><span>Negative 4%</span></div>
-
-          <button class="btn-secondary" onclick="console.log('submit report')">
-            <i data-lucide="message-square-plus"></i> Submit a Report
+        <!-- ===== BOTTOM TAB BAR ===== -->
+        <nav class="actionbar" role="tablist">
+          <button class="tab active" data-tab-btn="overview">
+            <i data-lucide="shield"></i>Overview
           </button>
+          <button class="tab" data-tab-btn="scan"><i data-lucide="file-search"></i>Scan</button>
+          <button class="tab" data-tab-btn="sandbox">
+            <i data-lucide="flask-conical"></i>Sandbox
+          </button>
+          <button class="tab" data-tab-btn="discover"><i data-lucide="search"></i>Discover</button>
+          <button class="tab" data-tab-btn="community"><i data-lucide="users"></i>Community</button>
+        </nav>
 
-          <div class="report">
-            <div class="report-head">
-              <div class="report-user"><div class="avatar">0x</div> 0x7a…F31</div>
-              <span class="report-date">2 days ago</span>
+        <!-- ===== DEBRIEF MODAL ===== -->
+        <div
+          class="modal-overlay"
+          id="debriefModal"
+          onclick="if (event.target === this) closeDebrief();"
+        >
+          <div class="modal">
+            <div class="modal-head">
+              <h2>Sandbox Debrief</h2>
+              <button class="icon-btn" onclick="closeDebrief()"><i data-lucide="x"></i></button>
             </div>
-            <p class="report-text">Smooth swap on Arbitrum, gas was reasonable. Confirmed legit frontend via ENS resolver.</p>
-            <div class="report-foot"><i data-lucide="thumbs-up"></i> 42 helpful</div>
-          </div>
-          <div class="report">
-            <div class="report-head">
-              <div class="report-user"><div class="avatar">vn</div> vault.eth</div>
-              <span class="report-date">5 days ago</span>
-            </div>
-            <p class="report-text">Used the new Universal Router for a multi-hop. Worked as expected, but double-check slippage on low-cap tokens.</p>
-            <div class="report-foot"><i data-lucide="thumbs-up"></i> 17 helpful</div>
+            <div id="debriefContent"></div>
           </div>
         </div>
-      </section>
-
-    </div>
-
-    <!-- ===== BOTTOM TAB BAR ===== -->
-    <nav class="actionbar" role="tablist">
-      <button class="tab active" data-tab-btn="overview"><i data-lucide="shield"></i>Overview</button>
-      <button class="tab" data-tab-btn="scan"><i data-lucide="file-search"></i>Scan</button>
-      <button class="tab" data-tab-btn="sandbox"><i data-lucide="flask-conical"></i>Sandbox</button>
-      <button class="tab" data-tab-btn="discover"><i data-lucide="search"></i>Discover</button>
-      <button class="tab" data-tab-btn="community"><i data-lucide="users"></i>Community</button>
-    </nav>
-
-    <!-- ===== DEBRIEF MODAL ===== -->
-    <div class="modal-overlay" id="debriefModal" onclick="if(event.target===this)closeDebrief()">
-      <div class="modal">
-        <div class="modal-head">
-          <h2>Sandbox Debrief</h2>
-          <button class="icon-btn" onclick="closeDebrief()"><i data-lucide="x"></i></button>
-        </div>
-        <div id="debriefContent"></div>
       </div>
     </div>
 
-  </div>
-</div>
-
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-<script>
-/* ============================================================
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+      /* ============================================================
    AEGIS — Prototype shell
    All site content lives in SITE_DATA; swap a single object to
    wire in real /api/analyze responses.
    ============================================================ */
 
-const SITE_DATA = {
-  safe: {
-    favicon: "U", domain: "app.uniswap.org", category: "DEX · Ethereum, 8 chains",
-    score: 95, ring: "green", live: "var(--safe)",
-    summary: "Established decentralized exchange. No suspicious signals detected. Trusted by 4.2M wallets.",
-    pills: [
-      { label: "Community Trust", tone: "green" },
-      { label: "New User Friendly", tone: "green" },
-      { label: "Audited", tone: "green" },
-    ],
-    explainer: "Uniswap is one of the largest decentralized exchanges on Ethereum, letting you swap tokens directly from your wallet without intermediaries.",
-    explainerAction: "The page is offering token swaps. Connecting your wallet allows the site to read balances and request swap signatures — it cannot move funds without your approval.",
-    explainerTech: "Router: 0xE592427A0AEce92De3Edee1F18E0157C05861564\nFrontend: Vercel · IPFS mirror available\nFramework: UniversalRouter v1.2\nNetwork calls: wss://mainnet.infura.io, https://api.uniswap.org",
-    threat: { level: "Very Low", pct: 8, color: "var(--safe)" },
-    checks: [
-      { state: "pass", text: "Domain age", sub: "Registered 2018 · 6 years old" },
-      { state: "pass", text: "Smart contract verified", sub: "Source matches deployed bytecode" },
-      { state: "pass", text: "UI fingerprint match", sub: "Matches official Uniswap interface" },
-      { state: "pass", text: "Phishing patterns", sub: "No known phishing markers found" },
-      { state: "pass", text: "Deployer reputation", sub: "Multisig — 12 trusted signers" },
-      { state: "pass", text: "Community signal", sub: "96% positive across 128 reports" },
-    ],
-    reportCount: 128,
-    showAlert: false,
-    tx: {
-      title: "Approve USDC for spending",
-      plain: "This contract is requesting permission to move your USDC. You can set a custom spend limit instead of unlimited approval.",
-      action: "ERC-20 approve()",
-      token: "USDC", spender: "0xE592…1564 (Uniswap Router)",
-      limit: "Unlimited ⚠", fee: "~$2.40",
-      risk: { label: "Low risk", cls: "low" },
-      approveDanger: false,
-      raw: "to:    0xA0b8…eB48\ndata:  0x095ea7b3000000000000000000000000e592...\nvalue: 0\ngas:   46211\nnonce: 142",
-    },
-    sandbox: { actions: 0, hidden: 0, flags: 0, on: false },
-    community: {
-      verdict: '128 reports. <strong style="color:var(--safe)">96% positive</strong>. Primary concern: occasional high gas during volatile markets.',
-      pos: 96, neg: 4,
-    },
-    og: { badge: "Cached", badgeCls: "low", status: '<span class="ok">✓ Analysis retrieved</span> from decentralized knowledge graph in 142ms.', hash: "0xa3f1…b7c2e9", nodes: "1,284 nodes", updated: "Updated 4 min ago" },
-  },
+      const SITE_DATA = {
+        safe: {
+          favicon: "U",
+          domain: "app.uniswap.org",
+          category: "DEX · Ethereum, 8 chains",
+          score: 95,
+          ring: "green",
+          live: "var(--safe)",
+          summary:
+            "Established decentralized exchange. No suspicious signals detected. Trusted by 4.2M wallets.",
+          pills: [
+            { label: "Community Trust", tone: "green" },
+            { label: "New User Friendly", tone: "green" },
+            { label: "Audited", tone: "green" },
+          ],
+          explainer:
+            "Uniswap is one of the largest decentralized exchanges on Ethereum, letting you swap tokens directly from your wallet without intermediaries.",
+          explainerAction:
+            "The page is offering token swaps. Connecting your wallet allows the site to read balances and request swap signatures — it cannot move funds without your approval.",
+          explainerTech:
+            "Router: 0xE592427A0AEce92De3Edee1F18E0157C05861564\nFrontend: Vercel · IPFS mirror available\nFramework: UniversalRouter v1.2\nNetwork calls: wss://mainnet.infura.io, https://api.uniswap.org",
+          threat: { level: "Very Low", pct: 8, color: "var(--safe)" },
+          checks: [
+            { state: "pass", text: "Domain age", sub: "Registered 2018 · 6 years old" },
+            {
+              state: "pass",
+              text: "Smart contract verified",
+              sub: "Source matches deployed bytecode",
+            },
+            {
+              state: "pass",
+              text: "UI fingerprint match",
+              sub: "Matches official Uniswap interface",
+            },
+            { state: "pass", text: "Phishing patterns", sub: "No known phishing markers found" },
+            { state: "pass", text: "Deployer reputation", sub: "Multisig — 12 trusted signers" },
+            { state: "pass", text: "Community signal", sub: "96% positive across 128 reports" },
+          ],
+          reportCount: 128,
+          showAlert: false,
+          tx: {
+            title: "Approve USDC for spending",
+            plain:
+              "This contract is requesting permission to move your USDC. You can set a custom spend limit instead of unlimited approval.",
+            action: "ERC-20 approve()",
+            token: "USDC",
+            spender: "0xE592…1564 (Uniswap Router)",
+            limit: "Unlimited ⚠",
+            fee: "~$2.40",
+            risk: { label: "Low risk", cls: "low" },
+            approveDanger: false,
+            raw: "to:    0xA0b8…eB48\ndata:  0x095ea7b3000000000000000000000000e592...\nvalue: 0\ngas:   46211\nnonce: 142",
+          },
+          sandbox: { actions: 0, hidden: 0, flags: 0, on: false },
+          community: {
+            verdict:
+              '128 reports. <strong style="color:var(--safe)">96% positive</strong>. Primary concern: occasional high gas during volatile markets.',
+            pos: 96,
+            neg: 4,
+          },
+          og: {
+            badge: "Cached",
+            badgeCls: "low",
+            status:
+              '<span class="ok">✓ Analysis retrieved</span> from decentralized knowledge graph in 142ms.',
+            hash: "0xa3f1…b7c2e9",
+            nodes: "1,284 nodes",
+            updated: "Updated 4 min ago",
+          },
+        },
 
-  risky: {
-    favicon: "!", domain: "uniswap-airdrop-claim.xyz", category: "Unknown · Claimed: ‘Airdrop’",
-    score: 14, ring: "red", live: "var(--danger)",
-    summary: "Newly registered domain impersonating Uniswap. Contract is unverified and requests unlimited token access.",
-    pills: [
-      { label: "No Community Trust", tone: "red" },
-      { label: "High Risk for New Users", tone: "red" },
-      { label: "Unaudited", tone: "red" },
-    ],
-    explainer: "This site claims to offer a Uniswap airdrop but the official Uniswap team has not announced any airdrop. The page mimics Uniswap's branding to appear legitimate.",
-    explainerAction: "You are being asked to connect your wallet and sign an approval transaction that grants the site unlimited access to your tokens. This is a common drain pattern.",
-    explainerTech: "Domain registered: 4 hours ago via Namecheap\nContract: 0x9a3c…f8b1 (unverified)\nDeployer: 0x4d2b…e102 (linked to 3 prior drainer contracts)\nFrontend: Vercel · cloned UI bundle",
-    threat: { level: "Critical", pct: 92, color: "var(--danger)" },
-    checks: [
-      { state: "fail", text: "Domain age", sub: "Registered 4 hours ago" },
-      { state: "fail", text: "Smart contract verified", sub: "Unverified bytecode" },
-      { state: "fail", text: "UI fingerprint match", sub: "Copied from app.uniswap.org" },
-      { state: "fail", text: "Phishing patterns", sub: "Matches known ‘claim airdrop’ template" },
-      { state: "fail", text: "Deployer reputation", sub: "Linked to 3 prior drainer contracts" },
-      { state: "warn", text: "Community signal", sub: "11 reports — 100% negative" },
-    ],
-    reportCount: 11,
-    showAlert: true,
-    alertText: "This site impersonates Uniswap and was deployed 4 hours ago by a known drainer wallet. Do not connect your wallet.",
-    tx: {
-      title: "setApprovalForAll — unlimited access",
-      plain: "This contract is requesting unlimited permission to move ALL of your ERC-20 tokens and NFTs to any address it chooses. If you sign, your wallet can be drained.",
-      action: "setApprovalForAll(true)",
-      token: "ALL tokens & NFTs",
-      spender: "0x9a3c…f8b1 (unverified)",
-      limit: "Unlimited — no cap",
-      fee: "~$8.10",
-      risk: { label: "Critical risk", cls: "crit" },
-      approveDanger: true,
-      raw: "to:    0x9a3c…f8b1\ndata:  0xa22cb46500000000000000000000000000000000…ff\nvalue: 0\ngas:   58213\nnonce: 87\n⚠ FLAG: granting operator role to unverified contract",
-    },
-    sandbox: { actions: 7, hidden: 2, flags: 3, on: false },
-    community: {
-      verdict: '11 reports. <strong style="color:var(--danger)">0% positive</strong>. Primary concern: wallet drained immediately after signing.',
-      pos: 0, neg: 100,
-    },
-    og: { badge: "New", badgeCls: "med", status: '<span style="color:var(--warn);font-weight:600">↑ New analysis</span> — storing to 0G now (3/5 nodes confirmed).', hash: "0xd84e…2af0c1", nodes: "1,284 nodes", updated: "Just now" },
-  },
+        risky: {
+          favicon: "!",
+          domain: "uniswap-airdrop-claim.xyz",
+          category: "Unknown · Claimed: ‘Airdrop’",
+          score: 14,
+          ring: "red",
+          live: "var(--danger)",
+          summary:
+            "Newly registered domain impersonating Uniswap. Contract is unverified and requests unlimited token access.",
+          pills: [
+            { label: "No Community Trust", tone: "red" },
+            { label: "High Risk for New Users", tone: "red" },
+            { label: "Unaudited", tone: "red" },
+          ],
+          explainer:
+            "This site claims to offer a Uniswap airdrop but the official Uniswap team has not announced any airdrop. The page mimics Uniswap's branding to appear legitimate.",
+          explainerAction:
+            "You are being asked to connect your wallet and sign an approval transaction that grants the site unlimited access to your tokens. This is a common drain pattern.",
+          explainerTech:
+            "Domain registered: 4 hours ago via Namecheap\nContract: 0x9a3c…f8b1 (unverified)\nDeployer: 0x4d2b…e102 (linked to 3 prior drainer contracts)\nFrontend: Vercel · cloned UI bundle",
+          threat: { level: "Critical", pct: 92, color: "var(--danger)" },
+          checks: [
+            { state: "fail", text: "Domain age", sub: "Registered 4 hours ago" },
+            { state: "fail", text: "Smart contract verified", sub: "Unverified bytecode" },
+            { state: "fail", text: "UI fingerprint match", sub: "Copied from app.uniswap.org" },
+            {
+              state: "fail",
+              text: "Phishing patterns",
+              sub: "Matches known ‘claim airdrop’ template",
+            },
+            {
+              state: "fail",
+              text: "Deployer reputation",
+              sub: "Linked to 3 prior drainer contracts",
+            },
+            { state: "warn", text: "Community signal", sub: "11 reports — 100% negative" },
+          ],
+          reportCount: 11,
+          showAlert: true,
+          alertText:
+            "This site impersonates Uniswap and was deployed 4 hours ago by a known drainer wallet. Do not connect your wallet.",
+          tx: {
+            title: "setApprovalForAll — unlimited access",
+            plain:
+              "This contract is requesting unlimited permission to move ALL of your ERC-20 tokens and NFTs to any address it chooses. If you sign, your wallet can be drained.",
+            action: "setApprovalForAll(true)",
+            token: "ALL tokens & NFTs",
+            spender: "0x9a3c…f8b1 (unverified)",
+            limit: "Unlimited — no cap",
+            fee: "~$8.10",
+            risk: { label: "Critical risk", cls: "crit" },
+            approveDanger: true,
+            raw: "to:    0x9a3c…f8b1\ndata:  0xa22cb46500000000000000000000000000000000…ff\nvalue: 0\ngas:   58213\nnonce: 87\n⚠ FLAG: granting operator role to unverified contract",
+          },
+          sandbox: { actions: 7, hidden: 2, flags: 3, on: false },
+          community: {
+            verdict:
+              '11 reports. <strong style="color:var(--danger)">0% positive</strong>. Primary concern: wallet drained immediately after signing.',
+            pos: 0,
+            neg: 100,
+          },
+          og: {
+            badge: "New",
+            badgeCls: "med",
+            status:
+              '<span style="color:var(--warn);font-weight:600">↑ New analysis</span> — storing to 0G now (3/5 nodes confirmed).',
+            hash: "0xd84e…2af0c1",
+            nodes: "1,284 nodes",
+            updated: "Just now",
+          },
+        },
 
-  sandbox: null, // resolved to safe + sandbox on
-};
-SITE_DATA.sandbox = { ...SITE_DATA.safe, sandbox: { actions: 7, hidden: 2, flags: 3, on: true } };
+        sandbox: null, // resolved to safe + sandbox on
+      };
+      SITE_DATA.sandbox = {
+        ...SITE_DATA.safe,
+        sandbox: { actions: 7, hidden: 2, flags: 3, on: true },
+      };
 
-let currentStateKey = "safe";
+      let currentStateKey = "safe";
 
-/* ---------- Render helpers ---------- */
-function setRing(score, tone){
-  const C = 2 * Math.PI * 22; // 138.23
-  const ring = document.getElementById('scoreRing');
-  ring.setAttribute('stroke-dasharray', C.toFixed(2));
-  ring.setAttribute('stroke-dashoffset', (C * (1 - score/100)).toFixed(2));
-  ring.classList.remove('green','amber','red');
-  ring.classList.add(tone);
-}
+      /* ---------- Render helpers ---------- */
+      function setRing(score, tone) {
+        const C = 2 * Math.PI * 22; // 138.23
+        const ring = document.getElementById("scoreRing");
+        ring.setAttribute("stroke-dasharray", C.toFixed(2));
+        ring.setAttribute("stroke-dashoffset", (C * (1 - score / 100)).toFixed(2));
+        ring.classList.remove("green", "amber", "red");
+        ring.classList.add(tone);
+      }
 
-function renderChecks(list){
-  const map = { pass: 'check', warn: 'alert-triangle', fail: 'x' };
-  document.getElementById('checksList').innerHTML = list.map(c => `
+      function renderChecks(list) {
+        const map = { pass: "check", warn: "alert-triangle", fail: "x" };
+        document.getElementById("checksList").innerHTML = list
+          .map(
+            (c) => `
     <li class="check">
       <span class="ci ${c.state}"><i data-lucide="${map[c.state]}"></i></span>
       <span class="ctext">${c.text}<span class="csub">${c.sub}</span></span>
-    </li>`).join('');
-}
+    </li>`,
+          )
+          .join("");
+      }
 
-function renderPills(pills){
-  document.getElementById('statusPills').innerHTML = pills.map(p =>
-    `<span class="status-pill"><span class="dot ${p.tone}"></span> ${p.label}</span>`
-  ).join('');
-}
+      function renderPills(pills) {
+        document.getElementById("statusPills").innerHTML = pills
+          .map(
+            (p) =>
+              `<span class="status-pill"><span class="dot ${p.tone}"></span> ${p.label}</span>`,
+          )
+          .join("");
+      }
 
-function applyState(key){
-  currentStateKey = key;
-  const d = SITE_DATA[key];
+      function applyState(key) {
+        currentStateKey = key;
+        const d = SITE_DATA[key];
 
-  // Header
-  document.getElementById('siteFavicon').textContent = d.favicon;
-  document.getElementById('siteDomain').textContent = d.domain;
-  document.getElementById('siteCategory').textContent = d.category;
-  document.getElementById('liveDot').style.background = d.live;
-  document.getElementById('scoreNum').textContent = d.score;
-  document.querySelector('[data-score]').setAttribute('data-score', d.score);
-  setRing(d.score, d.ring);
-  renderPills(d.pills);
-  document.getElementById('aiSummary').textContent = d.summary;
+        // Header
+        document.getElementById("siteFavicon").textContent = d.favicon;
+        document.getElementById("siteDomain").textContent = d.domain;
+        document.getElementById("siteCategory").textContent = d.category;
+        document.getElementById("liveDot").style.background = d.live;
+        document.getElementById("scoreNum").textContent = d.score;
+        document.querySelector("[data-score]").setAttribute("data-score", d.score);
+        setRing(d.score, d.ring);
+        renderPills(d.pills);
+        document.getElementById("aiSummary").textContent = d.summary;
 
-  // Explainer
-  document.getElementById('explainerText').textContent = d.explainer;
-  document.getElementById('explainerAction').textContent = d.explainerAction;
-  document.getElementById('explainerTech').textContent = d.explainerTech;
+        // Explainer
+        document.getElementById("explainerText").textContent = d.explainer;
+        document.getElementById("explainerAction").textContent = d.explainerAction;
+        document.getElementById("explainerTech").textContent = d.explainerTech;
 
-  // Scam detector
-  document.getElementById('threatLevel').textContent = d.threat.level;
-  document.getElementById('threatLevel').style.color = d.threat.color;
-  document.getElementById('threatFill').style.width = d.threat.pct + '%';
-  document.getElementById('threatFill').style.background = d.threat.color;
-  renderChecks(d.checks);
-  document.getElementById('reportCount').textContent = d.reportCount;
-  document.getElementById('riskAlert').classList.toggle('show', !!d.showAlert);
-  if (d.showAlert) document.getElementById('alertText').textContent = d.alertText;
+        // Scam detector
+        document.getElementById("threatLevel").textContent = d.threat.level;
+        document.getElementById("threatLevel").style.color = d.threat.color;
+        document.getElementById("threatFill").style.width = d.threat.pct + "%";
+        document.getElementById("threatFill").style.background = d.threat.color;
+        renderChecks(d.checks);
+        document.getElementById("reportCount").textContent = d.reportCount;
+        document.getElementById("riskAlert").classList.toggle("show", !!d.showAlert);
+        if (d.showAlert) document.getElementById("alertText").textContent = d.alertText;
 
-  // Tx
-  const tx = d.tx;
-  document.getElementById('txTitle').textContent = tx.title;
-  document.getElementById('txPlain').textContent = tx.plain;
-  document.getElementById('txAction').textContent = tx.action;
-  document.getElementById('txToken').textContent = tx.token;
-  document.getElementById('txSpender').textContent = tx.spender;
-  document.getElementById('txLimit').textContent = tx.limit;
-  document.getElementById('txFee').textContent = tx.fee;
-  const txRisk = document.getElementById('txRisk');
-  txRisk.className = 'badge ' + tx.risk.cls;
-  txRisk.textContent = tx.risk.label;
-  document.getElementById('txApprove').classList.toggle('danger', !!tx.approveDanger);
-  document.getElementById('txRaw').textContent = tx.raw;
+        // Tx
+        const tx = d.tx;
+        document.getElementById("txTitle").textContent = tx.title;
+        document.getElementById("txPlain").textContent = tx.plain;
+        document.getElementById("txAction").textContent = tx.action;
+        document.getElementById("txToken").textContent = tx.token;
+        document.getElementById("txSpender").textContent = tx.spender;
+        document.getElementById("txLimit").textContent = tx.limit;
+        document.getElementById("txFee").textContent = tx.fee;
+        const txRisk = document.getElementById("txRisk");
+        txRisk.className = "badge " + tx.risk.cls;
+        txRisk.textContent = tx.risk.label;
+        document.getElementById("txApprove").classList.toggle("danger", !!tx.approveDanger);
+        document.getElementById("txRaw").textContent = tx.raw;
 
-  // Sandbox
-  document.getElementById('sbActions').textContent = d.sandbox.actions;
-  document.getElementById('sbHidden').textContent = d.sandbox.hidden;
-  document.getElementById('sbFlags').textContent = d.sandbox.flags;
-  setSandbox(d.sandbox.on);
+        // Sandbox
+        document.getElementById("sbActions").textContent = d.sandbox.actions;
+        document.getElementById("sbHidden").textContent = d.sandbox.hidden;
+        document.getElementById("sbFlags").textContent = d.sandbox.flags;
+        setSandbox(d.sandbox.on);
 
-  // Community
-  document.getElementById('commVerdict').innerHTML = d.community.verdict;
-  document.querySelector('.sentiment-bar .pos').style.width = d.community.pos + '%';
-  document.querySelector('.sentiment-bar .neg').style.width = d.community.neg + '%';
-  document.querySelector('.sentiment-meta').innerHTML =
-    `<span>Positive ${d.community.pos}%</span><span>Negative ${d.community.neg}%</span>`;
+        // Community
+        document.getElementById("commVerdict").innerHTML = d.community.verdict;
+        document.querySelector(".sentiment-bar .pos").style.width = d.community.pos + "%";
+        document.querySelector(".sentiment-bar .neg").style.width = d.community.neg + "%";
+        document.querySelector(".sentiment-meta").innerHTML =
+          `<span>Positive ${d.community.pos}%</span><span>Negative ${d.community.neg}%</span>`;
 
-  // 0G
-  document.getElementById('ogBadge').className = 'badge ' + d.og.badgeCls;
-  document.getElementById('ogBadge').textContent = d.og.badge;
-  document.getElementById('ogStatus').innerHTML = d.og.status;
-  document.getElementById('ogHash').textContent = d.og.hash;
-  document.getElementById('ogUpdated').textContent = d.og.updated;
+        // 0G
+        document.getElementById("ogBadge").className = "badge " + d.og.badgeCls;
+        document.getElementById("ogBadge").textContent = d.og.badge;
+        document.getElementById("ogStatus").innerHTML = d.og.status;
+        document.getElementById("ogHash").textContent = d.og.hash;
+        document.getElementById("ogUpdated").textContent = d.og.updated;
 
-  // Auto-jump to relevant tab for storytelling
-  if (key === 'risky') switchTab('scan');
-  else if (key === 'sandbox') switchTab('sandbox');
-  else switchTab('overview');
+        // Auto-jump to relevant tab for storytelling
+        if (key === "risky") switchTab("scan");
+        else if (key === "sandbox") switchTab("sandbox");
+        else switchTab("overview");
 
-  if (window.lucide) lucide.createIcons();
-}
+        if (window.lucide) lucide.createIcons();
+      }
 
-/* ---------- Sandbox toggle ---------- */
-function setSandbox(on){
-  document.getElementById('sidebar').classList.toggle('sandbox-active', on);
-  const sw = document.getElementById('sandboxSwitch');
-  sw.classList.toggle('on', on);
-  sw.setAttribute('aria-checked', on);
-  document.getElementById('sandboxBlock').classList.toggle('sandbox-active-block', on);
-}
-document.getElementById('sandboxSwitch').addEventListener('click', () => {
-  const on = !document.getElementById('sandboxSwitch').classList.contains('on');
-  setSandbox(on);
-  if (on && SITE_DATA[currentStateKey].sandbox.actions === 0){
-    // seed demo sandbox data
-    SITE_DATA[currentStateKey].sandbox = { actions: 4, hidden: 1, flags: 1, on: true };
-    document.getElementById('sbActions').textContent = 4;
-    document.getElementById('sbHidden').textContent = 1;
-    document.getElementById('sbFlags').textContent = 1;
-  }
-  // TODO: call /api/sandbox/start or /api/sandbox/stop
-});
+      /* ---------- Sandbox toggle ---------- */
+      function setSandbox(on) {
+        document.getElementById("sidebar").classList.toggle("sandbox-active", on);
+        const sw = document.getElementById("sandboxSwitch");
+        sw.classList.toggle("on", on);
+        sw.setAttribute("aria-checked", on);
+        document.getElementById("sandboxBlock").classList.toggle("sandbox-active-block", on);
+      }
+      document.getElementById("sandboxSwitch").addEventListener("click", () => {
+        const on = !document.getElementById("sandboxSwitch").classList.contains("on");
+        setSandbox(on);
+        if (on && SITE_DATA[currentStateKey].sandbox.actions === 0) {
+          // seed demo sandbox data
+          SITE_DATA[currentStateKey].sandbox = { actions: 4, hidden: 1, flags: 1, on: true };
+          document.getElementById("sbActions").textContent = 4;
+          document.getElementById("sbHidden").textContent = 1;
+          document.getElementById("sbFlags").textContent = 1;
+        }
+        // TODO: call /api/sandbox/start or /api/sandbox/stop
+      });
 
-/* ---------- Tabs ---------- */
-function switchTab(name){
-  document.querySelectorAll('.tab').forEach(t =>
-    t.classList.toggle('active', t.dataset.tabBtn === name));
-  document.querySelectorAll('.zone').forEach(z =>
-    z.classList.toggle('show', z.dataset.tab === name));
-  document.querySelector('.scroll').scrollTop = 0;
-}
-document.querySelectorAll('.tab').forEach(t =>
-  t.addEventListener('click', () => switchTab(t.dataset.tabBtn)));
+      /* ---------- Tabs ---------- */
+      function switchTab(name) {
+        document
+          .querySelectorAll(".tab")
+          .forEach((t) => t.classList.toggle("active", t.dataset.tabBtn === name));
+        document
+          .querySelectorAll(".zone")
+          .forEach((z) => z.classList.toggle("show", z.dataset.tab === name));
+        document.querySelector(".scroll").scrollTop = 0;
+      }
+      document
+        .querySelectorAll(".tab")
+        .forEach((t) => t.addEventListener("click", () => switchTab(t.dataset.tabBtn)));
 
-/* ---------- State pills ---------- */
-document.querySelectorAll('[data-state-btn]').forEach(b => {
-  b.addEventListener('click', () => {
-    document.querySelectorAll('[data-state-btn]').forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
-    applyState(b.dataset.stateBtn);
-  });
-});
+      /* ---------- State pills ---------- */
+      document.querySelectorAll("[data-state-btn]").forEach((b) => {
+        b.addEventListener("click", () => {
+          document
+            .querySelectorAll("[data-state-btn]")
+            .forEach((x) => x.classList.remove("active"));
+          b.classList.add("active");
+          applyState(b.dataset.stateBtn);
+        });
+      });
 
-/* ---------- Debrief modal ---------- */
-function renderDebriefModal(sessionData){
-  const safe = currentStateKey === 'safe';
-  const verdictHtml = safe ? `
+      /* ---------- Debrief modal ---------- */
+      function renderDebriefModal(sessionData) {
+        const safe = currentStateKey === "safe";
+        const verdictHtml = safe
+          ? `
     <div class="modal-verdict safe">
       <i data-lucide="shield-check"></i>
       <div><div class="vt">Looks safe to proceed</div>
         <div class="vd">No hidden calls, no permission escalations. The site behaved exactly as advertised across ${sessionData.actions} simulated actions.</div></div>
-    </div>` : `
+    </div>`
+          : `
     <div class="modal-verdict">
       <i data-lucide="alert-octagon"></i>
       <div><div class="vt">Do not proceed — wallet drain detected</div>
         <div class="vd">Sandbox simulated ${sessionData.actions} actions and caught ${sessionData.hidden} hidden calls trying to escalate token approvals.</div></div>
     </div>`;
 
-  const events = safe ? [
-    { risk:'low', t:'00:02', act:'Connect wallet', d:'Requested address only — eth_accounts'},
-    { risk:'low', t:'00:08', act:'Read balance', d:'Called balanceOf on 3 ERC-20 contracts'},
-    { risk:'low', t:'00:21', act:'Quote swap', d:'Simulated ETH→USDC quote, slippage 0.3%'},
-    { risk:'med', t:'00:34', act:'Approve USDC', d:'Spend limit set to swap amount, not unlimited'},
-  ] : [
-    { risk:'low', t:'00:01', act:'Connect wallet', d:'Requested address — eth_accounts'},
-    { risk:'med', t:'00:04', act:'Switch network', d:'Forced switch to mainnet (eth_chainId mismatch)'},
-    { risk:'high', t:'00:09', act:'setApprovalForAll', d:'Hidden behind ‘Claim’ button — grants operator role for ALL NFTs'},
-    { risk:'high', t:'00:12', act:'permit2 signature', d:'Off-chain signature drains ERC-20 balances on relay'},
-    { risk:'high', t:'00:18', act:'Funds transfer attempt', d:'Sandbox blocked transferFrom of 8,420 USDC to 0x4d2b…e102'},
-  ];
+        const events = safe
+          ? [
+              {
+                risk: "low",
+                t: "00:02",
+                act: "Connect wallet",
+                d: "Requested address only — eth_accounts",
+              },
+              {
+                risk: "low",
+                t: "00:08",
+                act: "Read balance",
+                d: "Called balanceOf on 3 ERC-20 contracts",
+              },
+              {
+                risk: "low",
+                t: "00:21",
+                act: "Quote swap",
+                d: "Simulated ETH→USDC quote, slippage 0.3%",
+              },
+              {
+                risk: "med",
+                t: "00:34",
+                act: "Approve USDC",
+                d: "Spend limit set to swap amount, not unlimited",
+              },
+            ]
+          : [
+              {
+                risk: "low",
+                t: "00:01",
+                act: "Connect wallet",
+                d: "Requested address — eth_accounts",
+              },
+              {
+                risk: "med",
+                t: "00:04",
+                act: "Switch network",
+                d: "Forced switch to mainnet (eth_chainId mismatch)",
+              },
+              {
+                risk: "high",
+                t: "00:09",
+                act: "setApprovalForAll",
+                d: "Hidden behind ‘Claim’ button — grants operator role for ALL NFTs",
+              },
+              {
+                risk: "high",
+                t: "00:12",
+                act: "permit2 signature",
+                d: "Off-chain signature drains ERC-20 balances on relay",
+              },
+              {
+                risk: "high",
+                t: "00:18",
+                act: "Funds transfer attempt",
+                d: "Sandbox blocked transferFrom of 8,420 USDC to 0x4d2b…e102",
+              },
+            ];
 
-  document.getElementById('debriefContent').innerHTML = `
+        document.getElementById("debriefContent").innerHTML = `
     ${verdictHtml}
     <div class="sub-label">Session timeline</div>
     <ul class="timeline">
-      ${events.map(e => `
+      ${events
+        .map(
+          (e) => `
         <li class="risk-${e.risk}">
           <span class="tl-action">${e.act}</span><span class="tl-time">${e.t}</span>
           <div class="tl-detail">${e.d}</div>
-        </li>`).join('')}
+        </li>`,
+        )
+        .join("")}
     </ul>
     <div class="modal-actions">
       <button class="ma-block" onclick="console.log('block site'); closeDebrief()"><i data-lucide="ban"></i> Block Site</button>
       <button class="ma-report" onclick="console.log('report')"><i data-lucide="flag"></i> Report to Community</button>
       <button class="ma-proceed" onclick="console.log('proceed')"><i data-lucide="arrow-right"></i> Proceed</button>
     </div>`;
-  if (window.lucide) lucide.createIcons();
-}
-function openDebrief(){
-  renderDebriefModal(SITE_DATA[currentStateKey].sandbox);
-  document.getElementById('debriefModal').classList.add('show');
-}
-function closeDebrief(){ document.getElementById('debriefModal').classList.remove('show'); }
-window.openDebrief = openDebrief; window.closeDebrief = closeDebrief;
+        if (window.lucide) lucide.createIcons();
+      }
+      function openDebrief() {
+        renderDebriefModal(SITE_DATA[currentStateKey].sandbox);
+        document.getElementById("debriefModal").classList.add("show");
+      }
+      function closeDebrief() {
+        document.getElementById("debriefModal").classList.remove("show");
+      }
+      window.openDebrief = openDebrief;
+      window.closeDebrief = closeDebrief;
 
-/* ---------- Filters (visual only) ---------- */
-document.querySelectorAll('.filter').forEach(f =>
-  f.addEventListener('click', () => {
-    document.querySelectorAll('.filter').forEach(x => x.classList.remove('active'));
-    f.classList.add('active');
-    // TODO: call /api/discovery/search?category=...
-  }));
+      /* ---------- Filters (visual only) ---------- */
+      document.querySelectorAll(".filter").forEach((f) =>
+        f.addEventListener("click", () => {
+          document.querySelectorAll(".filter").forEach((x) => x.classList.remove("active"));
+          f.classList.add("active");
+          // TODO: call /api/discovery/search?category=...
+        }),
+      );
 
-/* ---------- Init ---------- */
-applyState('safe');
-if (window.lucide) lucide.createIcons();
+      /* ---------- Init ---------- */
+      applyState("safe");
+      if (window.lucide) lucide.createIcons();
 
-/* ============================================================
+      /* ============================================================
    REAL WALLET SIGNING-REQUEST DETECTION
    ------------------------------------------------------------
    In a real extension build, the content script injects this
@@ -1047,289 +2197,354 @@ if (window.lucide) lucide.createIcons();
    manual / demo triggering inside the preview iframe (no wallet).
    ============================================================ */
 
-const SIGHASH = {
-  "0x095ea7b3": "approve",
-  "0xa22cb465": "setApprovalForAll",
-  "0xa9059cbb": "transfer",
-  "0x23b872dd": "transferFrom",
-  "0xd505accf": "permit",
-  "0x42842e0e": "safeTransferFrom",
-  "0x2e1a7d4d": "withdraw",
-};
-const TOKENS = {
-  "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": { sym: "USDC", dec: 6 },
-  "0xdac17f958d2ee523a2206206994597c13d831ec7": { sym: "USDT", dec: 6 },
-  "0x6b175474e89094c44da98b954eedeac495271d0f": { sym: "DAI",  dec: 18 },
-  "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": { sym: "WETH", dec: 18 },
-};
-const KNOWN_SPENDERS = {
-  "0xe592427a0aece92de3edee1f18e0157c05861564": "Uniswap V3 Router",
-  "0x000000000022d473030f116ddee9f6b43ac78ba3": "Permit2",
-};
-const MAX_UINT_HEX = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+      const SIGHASH = {
+        "0x095ea7b3": "approve",
+        "0xa22cb465": "setApprovalForAll",
+        "0xa9059cbb": "transfer",
+        "0x23b872dd": "transferFrom",
+        "0xd505accf": "permit",
+        "0x42842e0e": "safeTransferFrom",
+        "0x2e1a7d4d": "withdraw",
+      };
+      const TOKENS = {
+        "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": { sym: "USDC", dec: 6 },
+        "0xdac17f958d2ee523a2206206994597c13d831ec7": { sym: "USDT", dec: 6 },
+        "0x6b175474e89094c44da98b954eedeac495271d0f": { sym: "DAI", dec: 18 },
+        "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": { sym: "WETH", dec: 18 },
+      };
+      const KNOWN_SPENDERS = {
+        "0xe592427a0aece92de3edee1f18e0157c05861564": "Uniswap V3 Router",
+        "0x000000000022d473030f116ddee9f6b43ac78ba3": "Permit2",
+      };
+      const MAX_UINT_HEX = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 
-function shortAddr(a){ return a ? a.slice(0,6)+"…"+a.slice(-4) : "—"; }
-function param(data, idx){ return data.slice(10 + idx*64, 10 + idx*64 + 64); }
-function wordToAddr(w){ return "0x" + w.slice(24).toLowerCase(); }
-function wordToBig(w){ try { return BigInt("0x" + w); } catch { return 0n; } }
-function fmtAmount(big, decimals, sym){
-  if (big.toString(16).padStart(64,"0") === MAX_UINT_HEX) return "Unlimited ⚠";
-  const d = BigInt(10) ** BigInt(decimals||0);
-  const whole = big / d;
-  const frac = big % d;
-  const fracStr = decimals
-    ? ("." + frac.toString().padStart(decimals,"0").slice(0,4).replace(/0+$/,""))
-    : "";
-  return whole.toString() + (fracStr === "." ? "" : fracStr) + (sym ? " " + sym : "");
-}
-
-function interpretRequest(method, params){
-  method = (method || "").toLowerCase();
-
-  if (method === "personal_sign" || method === "eth_sign"){
-    const hex = (params && (params[0] || params[1])) || "";
-    let text = hex;
-    try {
-      if (typeof hex === "string" && hex.startsWith("0x")){
-        text = new TextDecoder().decode(
-          new Uint8Array(hex.slice(2).match(/.{1,2}/g).map(b=>parseInt(b,16)))
-        );
+      function shortAddr(a) {
+        return a ? a.slice(0, 6) + "…" + a.slice(-4) : "—";
       }
-    } catch {}
-    return {
-      title: "Sign message",
-      plain: "The site is asking your wallet to sign a plain-text message. This does NOT move funds, but the signature can be used to prove ownership or log you in. Read the contents carefully.",
-      action: "personal_sign", token: "—", spender: "(off-chain)",
-      limit: text.slice(0,80) + (text.length>80 ? "…" : ""),
-      fee: "Free (no gas)",
-      risk: { label: "Low risk", cls: "low" },
-      approveDanger: false,
-      raw: "method: " + method + "\nmessage:\n" + text,
-    };
-  }
-
-  if (method.startsWith("eth_signtypeddata")){
-    let typed = params && params[1];
-    if (typeof typed === "string") { try { typed = JSON.parse(typed); } catch {} }
-    const primary = (typed && typed.primaryType) || "TypedData";
-    const isPermit = /permit/i.test(primary);
-    return {
-      title: isPermit ? "Off-chain token permit" : "Sign typed data — " + primary,
-      plain: isPermit
-        ? "This is a gas-less token approval (EIP-2612 / Permit2). A signature here can be relayed on-chain to spend your tokens without a second confirmation. Treat it like an on-chain approve()."
-        : "The site is asking your wallet to sign a structured (EIP-712) message. No gas is spent, but the signature may be used on-chain later.",
-      action: method,
-      token: (typed && typed.message && (typed.message.token || typed.message.spender)) || primary,
-      spender: shortAddr((typed && typed.message && (typed.message.spender || typed.message.to)) || ""),
-      limit: (typed && typed.message && (typed.message.value || typed.message.amount)) || "—",
-      fee: "Free (no gas)",
-      risk: isPermit ? { label: "High risk", cls: "crit" } : { label: "Medium risk", cls: "med" },
-      approveDanger: isPermit,
-      raw: JSON.stringify(typed, null, 2),
-    };
-  }
-
-  if (method === "eth_sendtransaction" || method === "wallet_sendtransaction" ||
-      method === "eth_signtransaction"){
-    const tx = (params && params[0]) || {};
-    const to = (tx.to || "").toLowerCase();
-    const data = (tx.data || tx.input || "0x").toLowerCase();
-    const value = tx.value || "0x0";
-    const selector = data.length >= 10 ? data.slice(0,10) : "";
-    const fn = SIGHASH[selector];
-    const tokenMeta = TOKENS[to] || { sym: shortAddr(to), dec: 0 };
-
-    let out = {
-      title: "Send transaction",
-      plain: "The site wants to send a transaction from your wallet.",
-      action: fn ? fn + "()" : (selector ? "Contract call " + selector : "ETH transfer"),
-      token: tokenMeta.sym, spender: shortAddr(to),
-      limit: value !== "0x0" ? fmtAmount(BigInt(value), 18, "ETH") : "—",
-      fee: tx.gas ? "~" + parseInt(tx.gas,16).toLocaleString() + " gas" : "—",
-      risk: { label: "Low risk", cls: "low" },
-      approveDanger: false,
-      raw: `to:    ${to}\ndata:  ${data.slice(0,72)}${data.length>72?"…":""}\nvalue: ${value}\ngas:   ${tx.gas||"—"}\nfrom:  ${tx.from||"—"}`,
-    };
-
-    if (fn === "approve"){
-      const spender = wordToAddr(param(data,0));
-      const amount  = wordToBig(param(data,1));
-      const unlimited = amount.toString(16).padStart(64,"0") === MAX_UINT_HEX;
-      const known = KNOWN_SPENDERS[spender];
-      out.title = `Approve ${tokenMeta.sym} for spending`;
-      out.plain = unlimited
-        ? `This contract is asking for UNLIMITED permission to move your ${tokenMeta.sym}. If the spender is malicious it can drain the entire balance whenever it wants. Set a custom limit instead.`
-        : `This contract is asking permission to move up to ${fmtAmount(amount, tokenMeta.dec, tokenMeta.sym)}.`;
-      out.spender = shortAddr(spender) + (known ? ` (${known})` : "");
-      out.limit   = unlimited ? "Unlimited ⚠" : fmtAmount(amount, tokenMeta.dec, tokenMeta.sym);
-      out.risk    = unlimited && !known ? { label: "High risk", cls: "crit" }
-                  : unlimited ? { label: "Medium risk", cls: "med" }
-                  : { label: "Low risk", cls: "low" };
-      out.approveDanger = unlimited && !known;
-    } else if (fn === "setApprovalForAll"){
-      const operator = wordToAddr(param(data,0));
-      const enabled  = wordToBig(param(data,1)) !== 0n;
-      out.title = enabled ? "setApprovalForAll — operator role" : "Revoke operator";
-      out.plain = enabled
-        ? "This grants the operator permission to move ALL of your NFTs / tokens in this collection — every token, any time, no further confirmation. This is the most common drainer pattern."
-        : "This revokes a previously granted operator role. Safe.";
-      out.token   = "ALL tokens in collection";
-      out.spender = shortAddr(operator) + (KNOWN_SPENDERS[operator] ? ` (${KNOWN_SPENDERS[operator]})` : " (unverified)");
-      out.limit   = enabled ? "Unlimited — no cap" : "Revoked";
-      out.risk    = enabled ? { label: "Critical risk", cls: "crit" } : { label: "Low risk", cls: "low" };
-      out.approveDanger = enabled;
-    } else if (fn === "transfer" || fn === "transferFrom"){
-      const recv = wordToAddr(param(data, fn === "transfer" ? 0 : 1));
-      const amt  = wordToBig(param(data, fn === "transfer" ? 1 : 2));
-      out.title  = `Transfer ${tokenMeta.sym}`;
-      out.plain  = `Moves ${fmtAmount(amt, tokenMeta.dec, tokenMeta.sym)} to ${shortAddr(recv)}. This is a final, on-chain transfer — it cannot be reversed.`;
-      out.limit  = fmtAmount(amt, tokenMeta.dec, tokenMeta.sym);
-      out.spender= shortAddr(recv);
-      out.risk   = { label: "Medium risk", cls: "med" };
-    }
-    return out;
-  }
-  return null;
-}
-
-/* ---------- Render a pending signature into the card ---------- */
-let _pendingResolver = null;
-function showPendingSignature(tx, resolver){
-  const card  = document.getElementById('txCard');
-  const empty = document.getElementById('txEmpty');
-  const body  = document.getElementById('txBody');
-  const pill  = document.getElementById('txPendingPill');
-
-  document.getElementById('txTitle').textContent  = tx.title;
-  document.getElementById('txPlain').textContent  = tx.plain;
-  document.getElementById('txAction').textContent = tx.action;
-  document.getElementById('txToken').textContent  = tx.token;
-  document.getElementById('txSpender').textContent= tx.spender;
-  document.getElementById('txLimit').textContent  = tx.limit;
-  document.getElementById('txFee').textContent    = tx.fee;
-  const txRisk = document.getElementById('txRisk');
-  txRisk.className = 'badge ' + tx.risk.cls;
-  txRisk.textContent = tx.risk.label;
-  document.getElementById('txApprove').classList.toggle('danger', !!tx.approveDanger);
-  document.getElementById('txRaw').textContent = tx.raw;
-
-  empty.style.display = 'none';
-  body.style.display  = '';
-  card.dataset.state  = 'pending';
-  card.classList.remove('pending','crit');
-  void card.offsetWidth;
-  card.classList.add('pending');
-  if (tx.risk.cls === 'crit') card.classList.add('crit');
-  pill.style.display = '';
-  pill.classList.toggle('crit', tx.risk.cls === 'crit');
-  pill.textContent = tx.risk.cls === 'crit' ? '● Critical' : '● Pending';
-
-  _pendingResolver = resolver || null;
-
-  switchTab('scan');
-  setTimeout(() => card.scrollIntoView({ behavior:'smooth', block:'center' }), 60);
-  if (window.lucide) lucide.createIcons();
-}
-function clearPendingSignature(){
-  document.getElementById('txEmpty').style.display = '';
-  document.getElementById('txBody').style.display  = 'none';
-  const card = document.getElementById('txCard');
-  card.classList.remove('pending','crit');
-  card.dataset.state = 'empty';
-  document.getElementById('txPendingPill').style.display = 'none';
-  _pendingResolver = null;
-}
-
-document.getElementById('txApprove').addEventListener('click', () => {
-  if (_pendingResolver) _pendingResolver.resolve({ approved:true, at:Date.now() });
-  clearPendingSignature();
-});
-document.getElementById('txCancel').addEventListener('click', () => {
-  if (_pendingResolver) _pendingResolver.reject(
-    Object.assign(new Error("User rejected the request via Aegis."), { code: 4001 })
-  );
-  clearPendingSignature();
-});
-document.getElementById('txSetLimit').addEventListener('click', () => {
-  const cur = document.getElementById('txLimit').textContent;
-  const v = prompt("Set a custom spend limit (replaces unlimited approval):", cur);
-  if (v) document.getElementById('txLimit').textContent = v + " (custom)";
-});
-
-/* ---------- Intercept window.ethereum ---------- */
-const SIGNING_METHODS = new Set([
-  "eth_sendtransaction","wallet_sendtransaction","eth_signtransaction",
-  "eth_sign","personal_sign",
-  "eth_signtypeddata","eth_signtypeddata_v1","eth_signtypeddata_v3","eth_signtypeddata_v4",
-]);
-function installEthereumProxy(provider){
-  if (!provider || provider.__aegisWrapped) return;
-  provider.__aegisWrapped = true;
-  const origRequest = provider.request && provider.request.bind(provider);
-  if (origRequest){
-    provider.request = function(args){
-      const method = (args && args.method || "").toLowerCase();
-      if (SIGNING_METHODS.has(method)){
-        const parsed = interpretRequest(args.method, args.params || []);
-        if (parsed){
-          return new Promise((resolve, reject) => {
-            showPendingSignature(parsed, {
-              resolve: () => origRequest(args).then(resolve, reject),
-              reject,
-            });
-          });
+      function param(data, idx) {
+        return data.slice(10 + idx * 64, 10 + idx * 64 + 64);
+      }
+      function wordToAddr(w) {
+        return "0x" + w.slice(24).toLowerCase();
+      }
+      function wordToBig(w) {
+        try {
+          return BigInt("0x" + w);
+        } catch {
+          return 0n;
         }
       }
-      return origRequest(args);
-    };
-  }
-  console.log("[Aegis] Wallet provider wrapped — sign requests will be intercepted.");
-}
-if (window.ethereum) installEthereumProxy(window.ethereum);
-let _ethCheck = setInterval(() => {
-  if (window.ethereum && !window.ethereum.__aegisWrapped) installEthereumProxy(window.ethereum);
-}, 500);
-setTimeout(() => clearInterval(_ethCheck), 15000);
-window.addEventListener('ethereum#initialized',
-  () => installEthereumProxy(window.ethereum), { once:true });
+      function fmtAmount(big, decimals, sym) {
+        if (big.toString(16).padStart(64, "0") === MAX_UINT_HEX) return "Unlimited ⚠";
+        const d = BigInt(10) ** BigInt(decimals || 0);
+        const whole = big / d;
+        const frac = big % d;
+        const fracStr = decimals
+          ? "." + frac.toString().padStart(decimals, "0").slice(0, 4).replace(/0+$/, "")
+          : "";
+        return whole.toString() + (fracStr === "." ? "" : fracStr) + (sym ? " " + sym : "");
+      }
 
-/* ---------- Public API + demo triggers ---------- */
-window.aegis = {
-  intercept: installEthereumProxy,
-  simulate(method, params){
-    const tx = interpretRequest(method, params || []);
-    if (!tx) return console.warn("[Aegis] not a signing method:", method);
-    return new Promise((resolve, reject) => showPendingSignature(tx, { resolve, reject }));
-  },
-};
-const DEMO_PAYLOADS = {
-  approve: ["eth_sendTransaction", [{
-    from: "0x1111111111111111111111111111111111111111",
-    to:   "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-    data: "0x095ea7b3"
-        + "000000000000000000000000e592427a0aece92de3edee1f18e0157c05861564"
-        + "0000000000000000000000000000000000000000000000000000000005f5e100",
-    value: "0x0", gas: "0xb474",
-  }]],
-  drain: ["eth_sendTransaction", [{
-    from: "0x1111111111111111111111111111111111111111",
-    to:   "0x9a3cf8b1aaaa0000000000000000000000000000",
-    data: "0xa22cb465"
-        + "0000000000000000000000004d2be1020000000000000000000000000000e102"
-        + "0000000000000000000000000000000000000000000000000000000000000001",
-    value: "0x0", gas: "0xe355",
-  }]],
-};
-document.querySelectorAll('[data-sim-btn]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const p = DEMO_PAYLOADS[btn.dataset.simBtn];
-    if (p) window.aegis.simulate(p[0], p[1])
-      .then(()  => console.log("[Aegis demo] approved"))
-      .catch(e => console.log("[Aegis demo] rejected:", e.message));
-  });
-});
+      function interpretRequest(method, params) {
+        method = (method || "").toLowerCase();
 
-/* ============================================================
+        if (method === "personal_sign" || method === "eth_sign") {
+          const hex = (params && (params[0] || params[1])) || "";
+          let text = hex;
+          try {
+            if (typeof hex === "string" && hex.startsWith("0x")) {
+              text = new TextDecoder().decode(
+                new Uint8Array(
+                  hex
+                    .slice(2)
+                    .match(/.{1,2}/g)
+                    .map((b) => parseInt(b, 16)),
+                ),
+              );
+            }
+          } catch {}
+          return {
+            title: "Sign message",
+            plain:
+              "The site is asking your wallet to sign a plain-text message. This does NOT move funds, but the signature can be used to prove ownership or log you in. Read the contents carefully.",
+            action: "personal_sign",
+            token: "—",
+            spender: "(off-chain)",
+            limit: text.slice(0, 80) + (text.length > 80 ? "…" : ""),
+            fee: "Free (no gas)",
+            risk: { label: "Low risk", cls: "low" },
+            approveDanger: false,
+            raw: "method: " + method + "\nmessage:\n" + text,
+          };
+        }
+
+        if (method.startsWith("eth_signtypeddata")) {
+          let typed = params && params[1];
+          if (typeof typed === "string") {
+            try {
+              typed = JSON.parse(typed);
+            } catch {}
+          }
+          const primary = (typed && typed.primaryType) || "TypedData";
+          const isPermit = /permit/i.test(primary);
+          return {
+            title: isPermit ? "Off-chain token permit" : "Sign typed data — " + primary,
+            plain: isPermit
+              ? "This is a gas-less token approval (EIP-2612 / Permit2). A signature here can be relayed on-chain to spend your tokens without a second confirmation. Treat it like an on-chain approve()."
+              : "The site is asking your wallet to sign a structured (EIP-712) message. No gas is spent, but the signature may be used on-chain later.",
+            action: method,
+            token:
+              (typed && typed.message && (typed.message.token || typed.message.spender)) || primary,
+            spender: shortAddr(
+              (typed && typed.message && (typed.message.spender || typed.message.to)) || "",
+            ),
+            limit: (typed && typed.message && (typed.message.value || typed.message.amount)) || "—",
+            fee: "Free (no gas)",
+            risk: isPermit
+              ? { label: "High risk", cls: "crit" }
+              : { label: "Medium risk", cls: "med" },
+            approveDanger: isPermit,
+            raw: JSON.stringify(typed, null, 2),
+          };
+        }
+
+        if (
+          method === "eth_sendtransaction" ||
+          method === "wallet_sendtransaction" ||
+          method === "eth_signtransaction"
+        ) {
+          const tx = (params && params[0]) || {};
+          const to = (tx.to || "").toLowerCase();
+          const data = (tx.data || tx.input || "0x").toLowerCase();
+          const value = tx.value || "0x0";
+          const selector = data.length >= 10 ? data.slice(0, 10) : "";
+          const fn = SIGHASH[selector];
+          const tokenMeta = TOKENS[to] || { sym: shortAddr(to), dec: 0 };
+
+          let out = {
+            title: "Send transaction",
+            plain: "The site wants to send a transaction from your wallet.",
+            action: fn ? fn + "()" : selector ? "Contract call " + selector : "ETH transfer",
+            token: tokenMeta.sym,
+            spender: shortAddr(to),
+            limit: value !== "0x0" ? fmtAmount(BigInt(value), 18, "ETH") : "—",
+            fee: tx.gas ? "~" + parseInt(tx.gas, 16).toLocaleString() + " gas" : "—",
+            risk: { label: "Low risk", cls: "low" },
+            approveDanger: false,
+            raw: `to:    ${to}\ndata:  ${data.slice(0, 72)}${data.length > 72 ? "…" : ""}\nvalue: ${value}\ngas:   ${tx.gas || "—"}\nfrom:  ${tx.from || "—"}`,
+          };
+
+          if (fn === "approve") {
+            const spender = wordToAddr(param(data, 0));
+            const amount = wordToBig(param(data, 1));
+            const unlimited = amount.toString(16).padStart(64, "0") === MAX_UINT_HEX;
+            const known = KNOWN_SPENDERS[spender];
+            out.title = `Approve ${tokenMeta.sym} for spending`;
+            out.plain = unlimited
+              ? `This contract is asking for UNLIMITED permission to move your ${tokenMeta.sym}. If the spender is malicious it can drain the entire balance whenever it wants. Set a custom limit instead.`
+              : `This contract is asking permission to move up to ${fmtAmount(amount, tokenMeta.dec, tokenMeta.sym)}.`;
+            out.spender = shortAddr(spender) + (known ? ` (${known})` : "");
+            out.limit = unlimited ? "Unlimited ⚠" : fmtAmount(amount, tokenMeta.dec, tokenMeta.sym);
+            out.risk =
+              unlimited && !known
+                ? { label: "High risk", cls: "crit" }
+                : unlimited
+                  ? { label: "Medium risk", cls: "med" }
+                  : { label: "Low risk", cls: "low" };
+            out.approveDanger = unlimited && !known;
+          } else if (fn === "setApprovalForAll") {
+            const operator = wordToAddr(param(data, 0));
+            const enabled = wordToBig(param(data, 1)) !== 0n;
+            out.title = enabled ? "setApprovalForAll — operator role" : "Revoke operator";
+            out.plain = enabled
+              ? "This grants the operator permission to move ALL of your NFTs / tokens in this collection — every token, any time, no further confirmation. This is the most common drainer pattern."
+              : "This revokes a previously granted operator role. Safe.";
+            out.token = "ALL tokens in collection";
+            out.spender =
+              shortAddr(operator) +
+              (KNOWN_SPENDERS[operator] ? ` (${KNOWN_SPENDERS[operator]})` : " (unverified)");
+            out.limit = enabled ? "Unlimited — no cap" : "Revoked";
+            out.risk = enabled
+              ? { label: "Critical risk", cls: "crit" }
+              : { label: "Low risk", cls: "low" };
+            out.approveDanger = enabled;
+          } else if (fn === "transfer" || fn === "transferFrom") {
+            const recv = wordToAddr(param(data, fn === "transfer" ? 0 : 1));
+            const amt = wordToBig(param(data, fn === "transfer" ? 1 : 2));
+            out.title = `Transfer ${tokenMeta.sym}`;
+            out.plain = `Moves ${fmtAmount(amt, tokenMeta.dec, tokenMeta.sym)} to ${shortAddr(recv)}. This is a final, on-chain transfer — it cannot be reversed.`;
+            out.limit = fmtAmount(amt, tokenMeta.dec, tokenMeta.sym);
+            out.spender = shortAddr(recv);
+            out.risk = { label: "Medium risk", cls: "med" };
+          }
+          return out;
+        }
+        return null;
+      }
+
+      /* ---------- Render a pending signature into the card ---------- */
+      let _pendingResolver = null;
+      function showPendingSignature(tx, resolver) {
+        const card = document.getElementById("txCard");
+        const empty = document.getElementById("txEmpty");
+        const body = document.getElementById("txBody");
+        const pill = document.getElementById("txPendingPill");
+
+        document.getElementById("txTitle").textContent = tx.title;
+        document.getElementById("txPlain").textContent = tx.plain;
+        document.getElementById("txAction").textContent = tx.action;
+        document.getElementById("txToken").textContent = tx.token;
+        document.getElementById("txSpender").textContent = tx.spender;
+        document.getElementById("txLimit").textContent = tx.limit;
+        document.getElementById("txFee").textContent = tx.fee;
+        const txRisk = document.getElementById("txRisk");
+        txRisk.className = "badge " + tx.risk.cls;
+        txRisk.textContent = tx.risk.label;
+        document.getElementById("txApprove").classList.toggle("danger", !!tx.approveDanger);
+        document.getElementById("txRaw").textContent = tx.raw;
+
+        empty.style.display = "none";
+        body.style.display = "";
+        card.dataset.state = "pending";
+        card.classList.remove("pending", "crit");
+        void card.offsetWidth;
+        card.classList.add("pending");
+        if (tx.risk.cls === "crit") card.classList.add("crit");
+        pill.style.display = "";
+        pill.classList.toggle("crit", tx.risk.cls === "crit");
+        pill.textContent = tx.risk.cls === "crit" ? "● Critical" : "● Pending";
+
+        _pendingResolver = resolver || null;
+
+        switchTab("scan");
+        setTimeout(() => card.scrollIntoView({ behavior: "smooth", block: "center" }), 60);
+        if (window.lucide) lucide.createIcons();
+      }
+      function clearPendingSignature() {
+        document.getElementById("txEmpty").style.display = "";
+        document.getElementById("txBody").style.display = "none";
+        const card = document.getElementById("txCard");
+        card.classList.remove("pending", "crit");
+        card.dataset.state = "empty";
+        document.getElementById("txPendingPill").style.display = "none";
+        _pendingResolver = null;
+      }
+
+      document.getElementById("txApprove").addEventListener("click", () => {
+        if (_pendingResolver) _pendingResolver.resolve({ approved: true, at: Date.now() });
+        clearPendingSignature();
+      });
+      document.getElementById("txCancel").addEventListener("click", () => {
+        if (_pendingResolver)
+          _pendingResolver.reject(
+            Object.assign(new Error("User rejected the request via Aegis."), { code: 4001 }),
+          );
+        clearPendingSignature();
+      });
+      document.getElementById("txSetLimit").addEventListener("click", () => {
+        const cur = document.getElementById("txLimit").textContent;
+        const v = prompt("Set a custom spend limit (replaces unlimited approval):", cur);
+        if (v) document.getElementById("txLimit").textContent = v + " (custom)";
+      });
+
+      /* ---------- Intercept window.ethereum ---------- */
+      const SIGNING_METHODS = new Set([
+        "eth_sendtransaction",
+        "wallet_sendtransaction",
+        "eth_signtransaction",
+        "eth_sign",
+        "personal_sign",
+        "eth_signtypeddata",
+        "eth_signtypeddata_v1",
+        "eth_signtypeddata_v3",
+        "eth_signtypeddata_v4",
+      ]);
+      function installEthereumProxy(provider) {
+        if (!provider || provider.__aegisWrapped) return;
+        provider.__aegisWrapped = true;
+        const origRequest = provider.request && provider.request.bind(provider);
+        if (origRequest) {
+          provider.request = function (args) {
+            const method = ((args && args.method) || "").toLowerCase();
+            if (SIGNING_METHODS.has(method)) {
+              const parsed = interpretRequest(args.method, args.params || []);
+              if (parsed) {
+                return new Promise((resolve, reject) => {
+                  showPendingSignature(parsed, {
+                    resolve: () => origRequest(args).then(resolve, reject),
+                    reject,
+                  });
+                });
+              }
+            }
+            return origRequest(args);
+          };
+        }
+        console.log("[Aegis] Wallet provider wrapped — sign requests will be intercepted.");
+      }
+      if (window.ethereum) installEthereumProxy(window.ethereum);
+      let _ethCheck = setInterval(() => {
+        if (window.ethereum && !window.ethereum.__aegisWrapped)
+          installEthereumProxy(window.ethereum);
+      }, 500);
+      setTimeout(() => clearInterval(_ethCheck), 15000);
+      window.addEventListener("ethereum#initialized", () => installEthereumProxy(window.ethereum), {
+        once: true,
+      });
+
+      /* ---------- Public API + demo triggers ---------- */
+      window.aegis = {
+        intercept: installEthereumProxy,
+        simulate(method, params) {
+          const tx = interpretRequest(method, params || []);
+          if (!tx) return console.warn("[Aegis] not a signing method:", method);
+          return new Promise((resolve, reject) => showPendingSignature(tx, { resolve, reject }));
+        },
+      };
+      const DEMO_PAYLOADS = {
+        approve: [
+          "eth_sendTransaction",
+          [
+            {
+              from: "0x1111111111111111111111111111111111111111",
+              to: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+              data:
+                "0x095ea7b3" +
+                "000000000000000000000000e592427a0aece92de3edee1f18e0157c05861564" +
+                "0000000000000000000000000000000000000000000000000000000005f5e100",
+              value: "0x0",
+              gas: "0xb474",
+            },
+          ],
+        ],
+        drain: [
+          "eth_sendTransaction",
+          [
+            {
+              from: "0x1111111111111111111111111111111111111111",
+              to: "0x9a3cf8b1aaaa0000000000000000000000000000",
+              data:
+                "0xa22cb465" +
+                "0000000000000000000000004d2be1020000000000000000000000000000e102" +
+                "0000000000000000000000000000000000000000000000000000000000000001",
+              value: "0x0",
+              gas: "0xe355",
+            },
+          ],
+        ],
+      };
+      document.querySelectorAll("[data-sim-btn]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const p = DEMO_PAYLOADS[btn.dataset.simBtn];
+          if (p)
+            window.aegis
+              .simulate(p[0], p[1])
+              .then(() => console.log("[Aegis demo] approved"))
+              .catch((e) => console.log("[Aegis demo] rejected:", e.message));
+        });
+      });
+
+      /* ============================================================
    INTEGRATION MANIFEST — TODOs
 
    // TODO: call /api/analyze?url=<currentTabUrl>          → ZONE 1/2/3 hydrate
@@ -1344,6 +2559,6 @@ document.querySelectorAll('[data-sim-btn]').forEach(btn => {
    // TODO: call /api/community/submit with report payload → ZONE 7 submit
    // TODO: wire Block Site → chrome.declarativeNetRequest rule
    ============================================================ */
-</script>
-</body>
+    </script>
+  </body>
 </html>
