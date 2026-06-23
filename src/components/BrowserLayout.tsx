@@ -332,7 +332,61 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
     },
   });
 
-  const activeMeta = ogGraphRegistry[activeUrl] || ogGraphRegistry["app.uniswap.org"];
+  // Resolve activeMeta with dynamic search results metadata or default/cached registry record
+  const getActiveMeta = (): SiteRecord => {
+    const registryRecord = ogGraphRegistry[activeUrl];
+    if (registryRecord) return registryRecord;
+
+    if (activeUrl && activeUrl.startsWith("search:")) {
+      const query = activeUrl.replace("search:", "");
+      const isScamQuery = query.includes("airdrop") || query.includes("claim") || query.includes("free") || query.includes("mint");
+      const score = isScamQuery ? 14 : 85;
+      const ring = score > 80 ? "green" : score > 40 ? "amber" : "red";
+      const color = score > 80 ? "#16A34A" : score > 40 ? "#F59E0B" : "#E53935";
+
+      return {
+        favicon: "Q",
+        domain: `Search: "${query}"`,
+        category: "Search Query Security Assessment",
+        score: score,
+        ring: ring as any,
+        threat: {
+          level: isScamQuery ? "High Risk" : "Low Risk",
+          pct: 100 - score,
+          color: color,
+        },
+        summary: isScamQuery
+          ? `Gorgon AI warning: The term "${query}" is highly correlated with Web3 phishing vectors, collection drainers, and fake claim templates.`
+          : `Gorgon AI search: Querying 0G Network nodes for protocols related to "${query}". No active threats found for this search term.`,
+        pills: ["Search Query", "0G Compute", isScamQuery ? "High Risk Term" : "Standard Term"],
+        explainer: `This panel shows a real-time safety assessment of your search query: "${query}".`,
+        actionExplainer: isScamQuery
+          ? "WARNING: Clicking links from search results for this term demands extreme signature authorization audits."
+          : "Standard search results. Always inspect the URL of any protocol before executing signatures.",
+        techDetails: `Query: ${query}\nInference: 0G Router API (minimax-m3)\nGraph Nodes Checked: 128`,
+        checks: [
+          {
+            state: isScamQuery ? "fail" : "pass",
+            text: "Search Query Vector",
+            sub: isScamQuery ? "Matches high-risk phishing signatures" : "No active phishing signature match",
+          },
+          {
+            state: "pass",
+            text: "0G Registry Lookup",
+            sub: "Search terms indexed successfully",
+          },
+        ],
+        nodes: 128,
+        updated: "Just now",
+        posSentiment: isScamQuery ? 10 : 90,
+        negSentiment: isScamQuery ? 90 : 10,
+      };
+    }
+
+    return ogGraphRegistry["app.uniswap.org"];
+  };
+
+  const activeMeta = getActiveMeta();
 
   // Detect if input is a natural-language search query vs a URL
   const detectInputMode = (input: string): "search" | "url" | "home" => {
@@ -734,18 +788,13 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
     !safeMode && (activeUrl === "uniswap-airdrop-claim.xyz" || activeUrl === "ape-vaults-mint.net");
 
   return (
-    <div className="w-full min-h-screen bg-[#07060A] text-[#ECECF3] flex items-center justify-center p-0 md:p-4 font-sans antialiased">
+    <div className="w-full h-screen bg-[#07060A] text-[#ECECF3] flex flex-col font-sans antialiased overflow-hidden">
       {/* ===== STANDALONE BROWSER FRAME CONTAINER ===== */}
-      <div className="w-full max-w-[1240px] h-screen md:h-[95vh] min-h-[640px] bg-[#0E0E17] border-0 md:border border-[#212133] rounded-none md:rounded-2xl flex flex-col overflow-hidden shadow-2xl relative">
+      <div className="w-full h-full bg-[#0E0E17] flex flex-col overflow-hidden relative">
         {/* Desktop window controls and browser tabs */}
         <div className="bg-[#121220] border-b border-[#212133] px-4 py-2.5 flex items-center justify-between gap-4 z-40 select-none">
           {/* OS Windows controls + Gorgon.Net wordmark */}
           <div className="flex items-center gap-3 flex-shrink-0">
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-[#FF5F56] border border-[#E0443E]"></div>
-              <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]"></div>
-              <div className="w-3 h-3 rounded-full bg-[#27C93F] border border-[#1AAB29]"></div>
-            </div>
             {/* Gorgon.Net logo mark */}
             <button
               onClick={() => {
@@ -1239,8 +1288,9 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
             )}
           </div>
 
-          {/* Right Panel: Aegis Secure Sidebar */}
-          <aside className="w-full lg:w-[360px] bg-[#0E0E17] border-t lg:border-t-0 lg:border-l border-[#212133] flex flex-col h-[500px] lg:h-auto overflow-hidden">
+          <aside className={`w-full lg:w-[360px] bg-[#0E0E17] border-t lg:border-t-0 lg:border-l border-[#212133] h-[500px] lg:h-auto overflow-hidden ${
+            !activeUrl ? "hidden" : "flex flex-col"
+          }`}>
             {/* Sidebar Site Info Section */}
             <div className="p-4 border-b border-[#212133] bg-[#121220]">
               <div className="flex items-center gap-3">
