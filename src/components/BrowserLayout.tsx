@@ -646,7 +646,7 @@ export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) 
   return (
     <div className="w-full min-h-screen bg-[#07060A] text-[#ECECF3] flex items-center justify-center p-0 md:p-4 font-sans antialiased">
       {/* ===== STANDALONE BROWSER FRAME CONTAINER ===== */}
-      <div className="w-full max-w-[1240px] h-[95vh] min-h-[640px] bg-[#0E0E17] border border-[#212133] rounded-2xl flex flex-col overflow-hidden shadow-2xl relative">
+      <div className="w-full max-w-[1240px] h-screen md:h-[95vh] min-h-[640px] bg-[#0E0E17] border-0 md:border border-[#212133] rounded-none md:rounded-2xl flex flex-col overflow-hidden shadow-2xl relative">
         
         {/* Desktop window controls and browser tabs */}
         <div className="bg-[#121220] border-b border-[#212133] px-4 py-2.5 flex items-center justify-between gap-4 z-40 select-none">
