@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6C47FF"/>
+      <stop offset="100%" stop-color="#9F86FF"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- Background rounded square -->
+  <rect width="32" height="32" rx="7" fill="url(#bg)"/>
+  <!-- Shine overlay -->
+  <rect width="32" height="16" rx="7" fill="url(#shine)"/>
+  <!-- Shield shape -->
+  <path d="M16 5L8 8.5V15.5C8 20.1 11.4 24.4 16 25.5C20.6 24.4 24 20.1 24 15.5V8.5L16 5Z" fill="white" fill-opacity="0.95"/>
+  <!-- Eye / G inside shield -->
+  <circle cx="16" cy="15" r="3.5" fill="url(#bg)"/>
+  <circle cx="16" cy="15" r="1.5" fill="white"/>
+</svg>

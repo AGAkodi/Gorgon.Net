@@ -1,4 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "sonner";
+
 import {
   Outlet,
   Link,
@@ -77,21 +79,41 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Gorgon.Net" },
+      { name: "description", content: "Gorgon.Net — The AI-powered Web3 search engine. Discover, research and safely browse DeFi protocols with real-time trust scoring backed by the 0G decentralized knowledge graph." },
+      { name: "author", content: "Gorgon.Net" },
+      { property: "og:title", content: "Gorgon.Net — AI Web3 Search Engine" },
+      { property: "og:description", content: "AI-powered Web3 search engine with real-time trust scoring, scam detection, and decentralized security knowledge." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:site", content: "@GorgonNet" },
+      { property: "og:image", content: "https://gorgon.net/og-image.png" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
     ],
     links: [
+      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+      { rel: "canonical", href: "https://gorgon.net/" },
+      { rel: "preconnect", href: "https://router-api.0g.ai" },
       {
         rel: "stylesheet",
         href: appCss,
       },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "name": "Gorgon.Net",
+          "url": "https://gorgon.net",
+          "description": "AI-powered Web3 search engine with real-time trust scoring and decentralized security knowledge.",
+          "applicationCategory": "SearchEngine",
+          "operatingSystem": "All"
+        })
+      }
+    ]
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -118,8 +140,8 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
+      <Toaster position="bottom-right" theme="dark" />
     </QueryClientProvider>
   );
 }

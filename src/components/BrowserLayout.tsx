@@ -30,9 +30,22 @@ import {
   Lock,
   Unlock,
   Plus,
+  Sparkles,
+  MessageCircle,
+  TrendingUp,
+  Flame,
+  Star,
+  ChevronRight,
+  Zap,
 } from "lucide-react";
 import { MockDApps } from "./MockDApps";
 import { SimulatedWalletDialog } from "./SimulatedWalletDialog";
+import { SearchResults } from "./SearchResults";
+import { AiChatPanel } from "./AiChatPanel";
+import { OgNetworkPanel } from "./OgNetworkPanel";
+import { loadSession, saveSession, addSearchHistory } from "../lib/session";
+import { toast } from "sonner";
+import { ogChat, CHAT_MODEL } from "../lib/og-client";
 
 interface TimelineEvent {
   risk: "low" | "med" | "high";
@@ -68,19 +81,21 @@ interface BrowserTab {
   historyIdx: number;
 }
 
-export function BrowserLayout() {
+export function BrowserLayout({ initialQuery = "" }: { initialQuery?: string }) {
+  const isInitialSearch = !!initialQuery.trim();
+
   // --- Tab Management ---
   const [tabs, setTabs] = useState<BrowserTab[]>([
     {
       id: "1",
-      title: "Uniswap",
-      url: "app.uniswap.org",
-      history: ["app.uniswap.org"],
+      title: isInitialSearch ? `Search: ${initialQuery}` : "Gorgon.Net — Home",
+      url: isInitialSearch ? `search:${initialQuery}` : "",
+      history: [isInitialSearch ? `search:${initialQuery}` : ""],
       historyIdx: 0,
     },
   ]);
   const [activeTabId, setActiveTabId] = useState<string>("1");
-  const [urlInput, setUrlInput] = useState<string>("app.uniswap.org");
+  const [urlInput, setUrlInput] = useState<string>(isInitialSearch ? initialQuery : "");
 
   // Get active tab helper
   const activeTab = tabs.find((t) => t.id === activeTabId) || tabs[0];
@@ -95,7 +110,39 @@ export function BrowserLayout() {
   const [isSandboxOpen, setIsSandboxOpen] = useState<boolean>(false);
 
   // Active Sidebar Tab
-  const [activeTabPanel, setActiveTabPanel] = useState<"overview" | "scan" | "sandbox" | "discover" | "community">("overview");
+  const [activeTabPanel, setActiveTabPanel] = useState<"overview" | "scan" | "sandbox" | "discover" | "community" | "ai" | "0g">("overview");
+
+  // --- Search Engine Mode ---
+  // isSearchMode=true when user typed a natural-language query (not a URL)
+  const [isSearchMode, setIsSearchMode] = useState<boolean>(isInitialSearch);
+  const [currentQuery, setCurrentQuery] = useState<string>(initialQuery);
+  // Home page is shown when URL is empty, "home", or "new-tab"
+  const [isHomePage, setIsHomePage] = useState<boolean>(!isInitialSearch);
+  const [homeInput, setHomeInput] = useState<string>(initialQuery);
+  const [searchHistory, setSearchHistory] = useState<string[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  // Session mount
+  useEffect(() => {
+    const session = loadSession();
+    setSearchHistory(session.searchHistory);
+  }, []);
+
+  // Global Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // CMD/CTRL + K to focus search
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        const searchInput = document.getElementById('omnibox-input') || document.getElementById('home-search-input');
+        if (searchInput) {
+          searchInput.focus();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Built-in Wallet Manager Panel Toggle
   const [isWalletOpen, setIsWalletOpen] = useState<boolean>(false);
@@ -222,6 +269,62 @@ export function BrowserLayout() {
 
   const activeMeta = ogGraphRegistry[activeUrl] || ogGraphRegistry["app.uniswap.org"];
 
+  // Detect if input is a natural-language search query vs a URL
+  const detectInputMode = (input: string): "search" | "url" | "home" => {
+    const trimmed = input.trim().toLowerCase();
+    if (trimmed === "" || trimmed === "home" || trimmed === "newtab" || trimmed === "new tab") return "home";
+    // Has spaces → almost certainly a natural language query
+    if (trimmed.includes(" ")) return "search";
+    // Has a valid TLD pattern → URL
+    if (/^[a-z0-9-]+\.[a-z]{2,}/.test(trimmed)) return "url";
+    // Short keyword without spaces → treat as search
+    return "search";
+  };
+
+  // Handle unified search/navigate input
+  const handleSearchOrNavigate = (input: string) => {
+    const mode = detectInputMode(input);
+    if (mode === "home") {
+      setIsHomePage(true);
+      setIsSearchMode(false);
+      setCurrentQuery("");
+      setHomeInput("");
+      return;
+    }
+    if (mode === "search") {
+      setIsHomePage(false);
+      setIsSearchMode(true);
+      setCurrentQuery(input.trim());
+      setUrlInput(input.trim());
+      
+      const newHistory = addSearchHistory(input.trim());
+      setSearchHistory(newHistory);
+
+      setTabs((prevTabs) =>
+        prevTabs.map((t) => {
+          if (t.id === activeTabId) {
+            const nextHistory = t.history.slice(0, t.historyIdx + 1);
+            nextHistory.push(`search:${input.trim()}`);
+            return {
+              ...t,
+              title: `Search: ${input.trim()}`,
+              url: `search:${input.trim()}`,
+              history: nextHistory,
+              historyIdx: nextHistory.length - 1,
+            };
+          }
+          return t;
+        })
+      );
+      return;
+    }
+    // URL mode — normal navigation
+    setIsHomePage(false);
+    setIsSearchMode(false);
+    setCurrentQuery("");
+    navigateTo(input);
+  };
+
   // When switching page on the current active tab
   const navigateTo = (url: string) => {
     let cleanUrl = url.trim().toLowerCase();
@@ -325,8 +428,14 @@ export function BrowserLayout() {
 
       if (cleanUrl === "app.uniswap.org") {
         setActiveTabPanel("overview");
+        toast.success(`Navigated to ${cleanUrl} safely.`);
       } else {
         setActiveTabPanel("scan");
+        if (isMalicious) {
+          toast.error(`Warning: High-risk domain blocked from executing auto-transactions.`);
+        } else {
+          toast.info(`Navigation complete. AI Audit generated.`);
+        }
       }
     }, delay);
   };
@@ -362,16 +471,19 @@ export function BrowserLayout() {
     const newId = Math.random().toString();
     const newTab: BrowserTab = {
       id: newId,
-      title: "Uniswap",
-      url: "app.uniswap.org",
-      history: ["app.uniswap.org"],
+      title: "New Tab",
+      url: "home",
+      history: ["home"],
       historyIdx: 0,
     };
     setTabs([...tabs, newTab]);
     setActiveTabId(newId);
-    setUrlInput("app.uniswap.org");
+    setUrlInput("");
     setSafeMode(false);
     setIsSandboxOpen(false);
+    setIsHomePage(true);
+    setIsSearchMode(false);
+    setHomeInput("");
   };
 
   const handleCloseTab = (id: string, e: React.MouseEvent) => {
@@ -424,26 +536,34 @@ export function BrowserLayout() {
       // Normal Mode: Trigger AI Transaction bytecode Interpreter / Auditor in sidebar first
       setIsAiInterpreting(true);
       setActiveTabPanel("scan");
-      setAiInterpretationStep("Intercepting wallet hook request...");
+      setAiInterpretationStep("Querying 0G Network for contract audit...");
 
-      setTimeout(() => {
-        setAiInterpretationStep("Analyzing contract bytecode & parameters...");
-        setTimeout(() => {
-          setAiInterpretationStep("Scanning compiler output & compiler bugs...");
-          setTimeout(() => {
-            setAiInterpretationStep("Evaluation complete. Showing risk debrief.");
-            setIsAiInterpreting(false);
-
-            setPendingTx({
-              ...tx,
-              onApprove: () => {
-                tx.onApprove();
-              },
-            });
-            setIsSignModalOpen(true);
-          }, 800);
-        }, 700);
-      }, 600);
+      ogChat(
+        [{ role: "user", content: `Audit this transaction:\nTitle: ${tx.title}\nDetails: ${tx.plain}\nIs this safe?` }],
+        { model: CHAT_MODEL, systemPrompt: "You are Gorgon AI, an expert smart contract auditor. Analyze the transaction and respond with a short risk assessment.", max_tokens: 150 }
+      ).then(() => {
+        setAiInterpretationStep("Evaluation complete. Showing risk debrief.");
+        setIsAiInterpreting(false);
+        toast.info("AI Transaction Audit Complete");
+        setPendingTx({
+          ...tx,
+          onApprove: () => {
+            tx.onApprove();
+          },
+        });
+        setIsSignModalOpen(true);
+      }).catch((err) => {
+        console.error("AI Audit error:", err);
+        setAiInterpretationStep("Evaluation fallback. Showing risk debrief.");
+        setIsAiInterpreting(false);
+        setPendingTx({
+          ...tx,
+          onApprove: () => {
+            tx.onApprove();
+          },
+        });
+        setIsSignModalOpen(true);
+      });
     }
   };
 
@@ -506,11 +626,24 @@ export function BrowserLayout() {
         
         {/* Desktop window controls and browser tabs */}
         <div className="bg-[#121220] border-b border-[#212133] px-4 py-2.5 flex items-center justify-between gap-4 z-40 select-none">
-          {/* OS Windows controls */}
-          <div className="flex items-center gap-1.5 flex-shrink-0">
-            <div className="w-3 h-3 rounded-full bg-[#FF5F56] border border-[#E0443E]"></div>
-            <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]"></div>
-            <div className="w-3 h-3 rounded-full bg-[#27C93F] border border-[#1AAB29]"></div>
+          {/* OS Windows controls + Gorgon.Net wordmark */}
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-full bg-[#FF5F56] border border-[#E0443E]"></div>
+              <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]"></div>
+              <div className="w-3 h-3 rounded-full bg-[#27C93F] border border-[#1AAB29]"></div>
+            </div>
+            {/* Gorgon.Net logo mark */}
+            <button
+              onClick={() => { setIsHomePage(true); setIsSearchMode(false); setUrlInput(""); setHomeInput(""); }}
+              className="flex items-center gap-1.5 group"
+              title="Gorgon.Net Home"
+            >
+              <div className="w-5 h-5 rounded-md bg-gradient-to-br from-[#6C47FF] to-[#9F86FF] flex items-center justify-center shadow-[0_0_8px_rgba(108,71,255,0.4)]">
+                <Shield className="w-3 h-3 text-white" />
+              </div>
+              <span className="text-xs font-black text-white group-hover:text-[#9F86FF] transition-colors tracking-tight">Gorgon<span className="text-[#9F86FF]">.Net</span></span>
+            </button>
           </div>
 
           {/* Browser Tabs - MULTIPLE TABS SUPPORTED */}
@@ -576,10 +709,14 @@ export function BrowserLayout() {
             </button>
           </div>
 
-          {/* URL Search bar - CLICKABLE SEARCH ICON */}
+          {/* URL / Search bar - Dual Mode */}
           <div className="flex-1 max-w-[700px] relative flex items-center bg-[#1A1A2B] border border-[#2B2B43] rounded-xl pr-1 focus-within:border-[#6C47FF] transition-all">
             <div className="pl-3 flex items-center justify-center text-gray-400">
-              {activeMeta.score > 80 ? (
+              {isSearchMode ? (
+                <Sparkles className="w-3.5 h-3.5 text-[#9F86FF] animate-pulse" />
+              ) : isHomePage ? (
+                <Search className="w-3.5 h-3.5 text-gray-500" />
+              ) : activeMeta.score > 80 ? (
                 <Lock className="w-3.5 h-3.5 text-green-500" />
               ) : activeMeta.score > 40 ? (
                 <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
@@ -588,18 +725,27 @@ export function BrowserLayout() {
               )}
             </div>
             <input
+              id="omnibox-input"
               type="text"
               value={urlInput}
               onChange={(e) => setUrlInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && navigateTo(urlInput)}
-              className="w-full bg-transparent border-0 py-2 pl-2.5 pr-10 text-xs outline-none text-[#ECECF3]"
-              placeholder="Search or enter URL (e.g. app.uniswap.org)..."
+              onKeyDown={(e) => e.key === "Enter" && handleSearchOrNavigate(urlInput)}
+              className="w-full bg-transparent border-0 py-2 pl-2.5 pr-20 text-xs outline-none text-[#ECECF3]"
+              placeholder="Search Web3 (e.g. 'best DEX') or enter a URL..."
             />
-            {/* Clickable Search Icon Button */}
+            {/* Shortcut hint badge */}
+            {!urlInput && (
+              <span className="absolute right-9 top-1/2 -translate-y-1/2 text-[8px] font-bold text-gray-500 border border-gray-700/50 px-1.5 py-0.5 rounded-md hidden md:block">⌘K</span>
+            )}
+            {/* Mode indicator badge */}
+            {urlInput.includes(" ") && (
+              <span className="absolute right-9 top-1/2 -translate-y-1/2 text-[8px] font-bold text-[#9F86FF] bg-[#6C47FF]/10 border border-[#6C47FF]/20 px-1.5 py-0.5 rounded-md">AI</span>
+            )}
+            {/* Search/Navigate button */}
             <button
-              onClick={() => navigateTo(urlInput)}
+              onClick={() => handleSearchOrNavigate(urlInput)}
               className="absolute right-2.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded hover:bg-[#2B2B3E] flex items-center justify-center text-gray-400 hover:text-white transition-all"
-              title="Search URL"
+              title="Search or Navigate"
             >
               <Search className="w-3.5 h-3.5" />
             </button>
@@ -660,18 +806,156 @@ export function BrowserLayout() {
         {/* ===== BROWSER VIEWPORT & SIDEBAR SPLIT (Normal Live Mode) ===== */}
         <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
           
-          {/* Left Panel: Web Page Viewport */}
+          {/* Left Panel: Web Page Viewport / Home / Search Results */}
           <div className="flex-1 flex flex-col bg-[#05050A] overflow-y-auto p-4 lg:p-6 min-h-[400px]">
-            {isBlocked ? (
-              /* Block Screen (if visiting phishing URL in Normal Live Mode) */
-              <div className="max-w-[500px] w-full mx-auto my-auto bg-[#180F11] border border-red-955 p-8 rounded-2xl text-center shadow-2xl relative overflow-hidden">
+            {isHomePage ? (
+              /* ── HOME / NEW TAB PAGE ── */
+              <div className="flex flex-col items-center justify-center min-h-full py-12 px-4">
+                {/* Gorgon.Net logo */}
+                <div className="relative mb-8 flex flex-col items-center gap-3">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-[#6C47FF]/20 rounded-full blur-xl scale-150" />
+                    <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-[#6C47FF] to-[#9F86FF] flex items-center justify-center shadow-[0_0_40px_rgba(108,71,255,0.4)]">
+                      <Shield className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <h1 className="text-3xl font-black text-white tracking-tight">Gorgon<span className="text-[#9F86FF]">.Net</span></h1>
+                    <p className="text-xs text-gray-400 mt-1">AI-Powered Web3 Search Engine · Secured by 0G Network</p>
+                  </div>
+                </div>
+
+                {/* Big search input */}
+                <div className="w-full max-w-[560px] relative group">
+                  <div className="relative flex items-center bg-[#1A1A2B] border border-[#2B2B43] rounded-2xl focus-within:border-[#6C47FF] focus-within:shadow-[0_0_30px_rgba(108,71,255,0.15)] transition-all z-10">
+                    <div className="pl-4">
+                      {isSearching ? (
+                        <div className="w-4 h-4 border-2 border-[#6C47FF] border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <Sparkles className="w-4 h-4 text-[#9F86FF]" />
+                      )}
+                    </div>
+                    <input
+                      id="home-search-input"
+                      type="text"
+                      value={homeInput}
+                      onChange={e => setHomeInput(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === "Enter" && homeInput.trim()) {
+                          setIsSearching(true);
+                          setUrlInput(homeInput.trim());
+                          handleSearchOrNavigate(homeInput.trim());
+                          setTimeout(() => setIsSearching(false), 500); // Reset after navigation triggers
+                        } else if (e.key === "Escape") {
+                          setHomeInput("");
+                        }
+                      }}
+                      className="flex-1 bg-transparent border-0 py-4 px-3 text-sm outline-none text-[#ECECF3] placeholder-gray-500"
+                      placeholder="Search Web3 protocols, tokens, DeFi... or enter a URL"
+                      autoFocus
+                    />
+                    <button
+                      onClick={() => {
+                        if (homeInput.trim()) {
+                          setIsSearching(true);
+                          setUrlInput(homeInput.trim());
+                          handleSearchOrNavigate(homeInput.trim());
+                          setTimeout(() => setIsSearching(false), 500);
+                        }
+                      }}
+                      className="mr-2 px-4 py-2 bg-[#6C47FF] hover:bg-[#5B39E6] text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1.5"
+                    >
+                      {isSearching ? "Searching..." : "Search"}
+                    </button>
+                  </div>
+                  
+                  {/* Search History Dropdown */}
+                  {searchHistory.length > 0 && !homeInput && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-[#1A1A2B] border border-[#2B2B43] rounded-xl shadow-2xl overflow-hidden opacity-0 invisible group-focus-within:opacity-100 group-focus-within:visible transition-all z-20">
+                      <div className="px-4 py-2 text-[10px] font-bold text-gray-500 uppercase tracking-wider border-b border-[#2B2B43]">
+                        Recent Searches
+                      </div>
+                      <div className="max-h-48 overflow-y-auto py-1">
+                        {searchHistory.map((h, i) => (
+                          <button
+                            key={i}
+                            className="w-full text-left px-4 py-2.5 text-xs text-gray-300 hover:bg-[#2B2B43] flex items-center gap-3 transition-colors"
+                            onMouseDown={(e) => {
+                              // Use onMouseDown to prevent blur before click registers
+                              e.preventDefault();
+                              setHomeInput(h);
+                              setIsSearching(true);
+                              setUrlInput(h);
+                              handleSearchOrNavigate(h);
+                              setTimeout(() => setIsSearching(false), 500);
+                            }}
+                          >
+                            <RotateCw className="w-3.5 h-3.5 text-gray-500" />
+                            {h}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Trending searches */}
+                <div className="mt-3 flex flex-wrap items-center gap-2 justify-center">
+                    <span className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">Trending:</span>
+                    {["best DEX for swaps", "ETH staking", "NFT marketplace", "DeFi lending", "airdrop scams"].map(q => (
+                      <button
+                        key={q}
+                        onClick={() => { setHomeInput(q); setUrlInput(q); handleSearchOrNavigate(q); }}
+                        className="text-[10.5px] text-gray-300 bg-[#1A1A2B] hover:bg-[#252538] border border-[#2B2B43] hover:border-[#6C47FF]/40 px-2.5 py-1 rounded-full transition-all"
+                      >
+                        {q}
+                      </button>
+                    ))}
+                  </div>
+
+                {/* Quick links */}
+                <div className="mt-10 w-full max-w-[560px]">
+                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3 text-center">Popular Protocols</p>
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { favicon: "U", name: "Uniswap", domain: "app.uniswap.org", category: "DEX", score: 95 },
+                      { favicon: "A", name: "Aave", domain: "app.aave.com", category: "Lending", score: 94 },
+                      { favicon: "L", name: "Lido", domain: "lido.fi", category: "Staking", score: 92 },
+                      { favicon: "C", name: "Curve", domain: "curve.fi", category: "DEX", score: 92 },
+                      { favicon: "O", name: "OpenSea", domain: "opensea.io", category: "NFTs", score: 91 },
+                      { favicon: "1", name: "1inch", domain: "1inch.io", category: "Aggregator", score: 89 },
+                    ].map(site => (
+                      <button
+                        key={site.domain}
+                        onClick={() => { setIsHomePage(false); navigateTo(site.domain); }}
+                        className="bg-[#0E0E17] hover:bg-[#181829] border border-[#212133] hover:border-[#6C47FF]/40 rounded-xl p-3 flex flex-col items-center gap-2 transition-all group"
+                      >
+                        <div className="w-9 h-9 rounded-xl bg-[#1A1A2B] border border-[#2B2B43] flex items-center justify-center font-black text-[#9F86FF] text-sm group-hover:border-[#6C47FF]/50 transition-all">{site.favicon}</div>
+                        <div className="text-center">
+                          <p className="text-xs font-bold text-white">{site.name}</p>
+                          <p className="text-[9px] text-gray-500">{site.category}</p>
+                        </div>
+                        <div className="text-[9px] font-bold text-green-400">Score: {site.score}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : isSearchMode ? (
+              /* ── AI SEARCH RESULTS PAGE ── */
+              <div className="w-full max-w-[720px] mx-auto">
+                <SearchResults query={currentQuery} onNavigate={(url) => { setIsHomePage(false); setIsSearchMode(false); setCurrentQuery(""); navigateTo(url); }} />
+              </div>
+            ) : isBlocked ? (
+              /* ── Block Screen (phishing URL in Normal Live Mode) ── */
+              <div className="max-w-[500px] w-full mx-auto my-auto bg-[#180F11] border border-red-900/40 p-8 rounded-2xl text-center shadow-2xl relative overflow-hidden">
                 <div className="absolute top-[-10%] left-[-10%] w-[150px] h-[150px] bg-red-600/10 rounded-full blur-2xl"></div>
                 <ShieldAlert className="w-14 h-14 text-red-500 mx-auto mb-5 drop-shadow-[0_0_8px_rgba(239,68,68,0.3)]" />
                 <h2 className="text-xl font-black text-red-400 mb-2 uppercase tracking-wide">
                   Blocked: Phishing Warning
                 </h2>
                 <p className="text-gray-300 text-xs mb-6 leading-relaxed">
-                  Aegis blocked this page for your safety. It requests operator roles (setApprovalForAll) or gas-less signatures (Permit2) to steal user tokens. To explore safely, enter Sandbox Mode.
+                  Gorgon.Net blocked this page for your safety. It requests operator roles (setApprovalForAll) or gas-less signatures (Permit2) to steal user tokens. To explore safely, enter Sandbox Mode.
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -682,15 +966,15 @@ export function BrowserLayout() {
                     <FlaskConical className="w-4 h-4" /> Open Site in Isolated Sandbox
                   </button>
                   <button
-                    onClick={() => navigateTo("app.uniswap.org")}
+                    onClick={() => { setIsHomePage(true); setIsSearchMode(false); setUrlInput(""); }}
                     className="bg-transparent hover:bg-white/5 border border-gray-700 text-gray-300 hover:text-white font-bold text-xs px-4 py-3 rounded-xl transition-all"
                   >
-                    Return to Safety
+                    Return to Home
                   </button>
                 </div>
               </div>
             ) : (
-              /* Active Mock Web3 dApp Viewport in Normal Mode */
+              /* ── Active Mock Web3 dApp Viewport in Normal Mode ── */
               <div className="w-full max-w-[720px] mx-auto">
                 <MockDApps
                   currentUrl={activeUrl}
@@ -779,19 +1063,22 @@ export function BrowserLayout() {
             <div className="flex border-b border-[#212133] bg-[#10101C]">
               {[
                 { id: "overview", label: "Overview", icon: Shield },
-                { id: "scan", label: "AI Scanner", icon: FileSearch },
-                { id: "community", label: "Community", icon: Users },
+                { id: "scan", label: "AI Scan", icon: FileSearch },
+                { id: "discover", label: "Discover", icon: Compass },
+                { id: "community", label: "Reports", icon: Users },
+                { id: "ai", label: "Ask AI", icon: MessageCircle },
+                { id: "0g", label: "0G Net", icon: Database },
               ].map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTabPanel(tab.id as any)}
-                  className={`py-2.5 text-[10px] font-bold flex flex-col items-center gap-1 border-b-2 transition-all flex-1 ${
+                  className={`py-2 text-[9.5px] font-bold flex flex-col items-center gap-1 border-b-2 transition-all flex-1 ${
                     activeTabPanel === tab.id
                       ? "border-[#6C47FF] text-[#9F86FF]"
                       : "border-transparent text-gray-400 hover:text-gray-200"
                   }`}
                 >
-                  <tab.icon className="w-3.5 h-3.5" />
+                  <tab.icon className="w-3 h-3" />
                   {tab.label}
                 </button>
               ))}
@@ -868,7 +1155,116 @@ export function BrowserLayout() {
                 </div>
               )}
 
-              {/* T3: Community Tab */}
+              {/* T3: Discover Tab */}
+              {activeTabPanel === "discover" && (
+                <div className="space-y-4 animate-fade-in">
+                  {/* Trending Now */}
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <Flame className="w-3.5 h-3.5 text-orange-400" />
+                      <span className="text-[9.5px] font-black text-gray-300 uppercase tracking-widest">Trending Protocols</span>
+                    </div>
+                    <div className="space-y-2">
+                      {[
+                        { favicon: "U", name: "Uniswap", domain: "app.uniswap.org", tag: "DEX", score: 95, color: "text-green-400", change: "+12% volume" },
+                        { favicon: "A", name: "Aave", domain: "app.aave.com", tag: "Lending", score: 94, color: "text-green-400", change: "$12.8B TVL" },
+                        { favicon: "L", name: "Lido", domain: "lido.fi", tag: "Staking", score: 92, color: "text-green-400", change: "32B staked" },
+                        { favicon: "B", name: "Blur", domain: "blur.io", tag: "NFT", score: 87, color: "text-green-400", change: "Top NFT vol" },
+                        { favicon: "P", name: "PancakeSwap", domain: "pancakeswap.finance", tag: "DEX", score: 86, color: "text-green-400", change: "BSC leader" },
+                      ].map((site, idx) => (
+                        <button
+                          key={site.domain}
+                          onClick={() => { setIsHomePage(false); setIsSearchMode(false); navigateTo(site.domain); }}
+                          className="w-full bg-[#181829] hover:bg-[#1E1E35] border border-[#2B2B43] hover:border-[#6C47FF]/40 rounded-xl p-2.5 flex items-center gap-2.5 transition-all group text-left"
+                        >
+                          <span className="text-[10px] font-black text-gray-600 w-4 flex-shrink-0">#{idx+1}</span>
+                          <div className="w-7 h-7 rounded-lg bg-[#1A1A2B] border border-[#2B2B43] flex items-center justify-center font-black text-[#9F86FF] text-xs flex-shrink-0">{site.favicon}</div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs font-bold text-white">{site.name}</span>
+                              <span className="text-[8px] text-gray-500 bg-[#1A1A2B] border border-[#2B2B43] px-1 py-0.5 rounded">{site.tag}</span>
+                            </div>
+                            <span className="text-[9.5px] text-gray-500">{site.change}</span>
+                          </div>
+                          <div className="text-[10px] font-black text-green-400">{site.score}</div>
+                          <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-[#9F86FF] transition-colors" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Scam Watch */}
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <ShieldAlert className="w-3.5 h-3.5 text-red-400" />
+                      <span className="text-[9.5px] font-black text-gray-300 uppercase tracking-widest">Scam Watch 🚨</span>
+                    </div>
+                    <div className="space-y-2">
+                      {[
+                        { domain: "uniswap-airdrop-claim.xyz", type: "Fake Airdrop", ago: "4h ago", reports: 11 },
+                        { domain: "ape-vaults-mint.net", type: "NFT Drainer", ago: "26h ago", reports: 4 },
+                        { domain: "blur-nft-claim.io", type: "Phishing Clone", ago: "2d ago", reports: 28 },
+                      ].map(s => (
+                        <div key={s.domain} className="bg-red-950/20 border border-red-800/30 rounded-xl p-2.5 flex items-start gap-2">
+                          <div className="w-5 h-5 rounded-lg bg-red-900/30 border border-red-800/40 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <Ban className="w-3 h-3 text-red-400" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[10px] font-bold text-red-300 truncate">{s.domain}</p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <span className="text-[9px] text-red-400/60">{s.type}</span>
+                              <span className="text-[9px] text-gray-600">·</span>
+                              <span className="text-[9px] text-gray-600">{s.ago}</span>
+                              <span className="text-[9px] text-gray-600">·</span>
+                              <span className="text-[9px] text-red-400">{s.reports} reports</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* AI Pick of the Day */}
+                  <div className="bg-gradient-to-br from-[#1A1435] to-[#181829] border border-[#6C47FF]/30 rounded-xl p-3 space-y-2">
+                    <div className="flex items-center gap-1.5">
+                      <Star className="w-3.5 h-3.5 text-yellow-400" />
+                      <span className="text-[9.5px] font-black text-[#9F86FF] uppercase tracking-widest">Gorgon AI Pick</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-xl bg-[#1A1A2B] border border-[#2B2B43] flex items-center justify-center font-black text-[#9F86FF] text-sm">A</div>
+                      <div>
+                        <p className="text-xs font-bold text-white">Aave v3</p>
+                        <p className="text-[9px] text-gray-400">Lending · 94/100 trust score</p>
+                      </div>
+                    </div>
+                    <p className="text-[10.5px] text-gray-400 leading-relaxed">Most secure lending protocol for earning yield on idle assets. $12.8B TVL, triple-audited, DAO-governed.</p>
+                    <button
+                      onClick={() => { setIsHomePage(false); setIsSearchMode(false); navigateTo("app.aave.com"); }}
+                      className="w-full py-2 bg-[#6C47FF]/20 hover:bg-[#6C47FF]/30 border border-[#6C47FF]/30 text-[#9F86FF] text-[10px] font-bold rounded-lg transition-all"
+                    >
+                      Open Aave with Trust Verification →
+                    </button>
+                  </div>
+
+                  {/* Quick search */}
+                  <div>
+                    <p className="text-[9.5px] font-black text-gray-500 uppercase tracking-widest mb-2">Quick Searches</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {["best DEX", "ETH staking", "NFT marketplace", "DeFi lending", "airdrop scams"].map(q => (
+                        <button
+                          key={q}
+                          onClick={() => { setUrlInput(q); setIsHomePage(false); setIsSearchMode(true); setCurrentQuery(q); }}
+                          className="text-[9px] text-gray-300 bg-[#1A1A2B] hover:bg-[#252538] border border-[#2B2B43] px-2 py-1 rounded-full transition-all"
+                        >
+                          {q}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* T4: Community Tab */}
               {activeTabPanel === "community" && (
                 <div className="space-y-4 animate-fade-in">
                   <div className="bg-[#181829] border border-[#2B2B43] rounded-xl p-3 space-y-2">
@@ -898,19 +1294,8 @@ export function BrowserLayout() {
                         className="w-full h-16 bg-[#131320] border border-[#222235] rounded-lg p-2 text-xs outline-none text-white focus:border-[#6C47FF] resize-none"
                       ></textarea>
                       <div className="flex gap-2">
-                        <button
-                          type="submit"
-                          className="flex-1 py-1.5 bg-purple-600 text-white font-bold text-[10.5px] rounded-lg"
-                        >
-                          Submit
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setShowReportForm(false)}
-                          className="px-2.5 py-1.5 border border-gray-700 text-gray-400 text-[10.5px] rounded-lg"
-                        >
-                          Cancel
-                        </button>
+                        <button type="submit" className="flex-1 py-1.5 bg-purple-600 text-white font-bold text-[10.5px] rounded-lg">Submit</button>
+                        <button type="button" onClick={() => setShowReportForm(false)} className="px-2.5 py-1.5 border border-gray-700 text-gray-400 text-[10.5px] rounded-lg">Cancel</button>
                       </div>
                     </form>
                   )}
@@ -920,9 +1305,7 @@ export function BrowserLayout() {
                       <div key={idx} className="bg-[#181829] border border-[#2B2B43] p-3 rounded-xl space-y-1">
                         <div className="flex justify-between items-center text-[10px]">
                           <span className="font-bold text-white flex items-center gap-1">
-                            <div className="w-3.5 h-3.5 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-[8px]">
-                              0x
-                            </div>
+                            <div className="w-3.5 h-3.5 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-[8px]">0x</div>
                             {report.user}
                           </span>
                           <span className="text-gray-500">{report.date}</span>
@@ -933,14 +1316,33 @@ export function BrowserLayout() {
                   </div>
                 </div>
               )}
+
+              {/* T5: AI Chat Tab */}
+              {activeTabPanel === "ai" && (
+                <div className="-m-4 h-[calc(100%+2rem)]" style={{ minHeight: 360 }}>
+                  <AiChatPanel
+                    currentUrl={activeUrl}
+                    currentScore={activeMeta.score}
+                    currentSummary={activeMeta.summary}
+                  />
+                </div>
+              )}
+
+              {/* T6: 0G Network Tab */}
+              {activeTabPanel === "0g" && (
+                <div className="-m-4 h-[calc(100%+2rem)]" style={{ minHeight: 360 }}>
+                  <OgNetworkPanel />
+                </div>
+              )}
             </div>
 
             {/* Sidebar Bottom Frame indicators */}
             <div className="p-3 border-t border-[#212133] bg-[#121220] flex items-center justify-between text-[10px] text-gray-500 select-none">
               <span className="flex items-center gap-1">
-                <ShieldCheck className="w-3 h-3 text-[#16A34A]" /> Aegis Live Protection
+                <Shield className="w-3 h-3 text-[#6C47FF]" />
+                <span className="text-[#9F86FF] font-bold">Gorgon.Net</span> · Live Protection
               </span>
-              <span>v1.0.4-secure</span>
+              <span>v2.0 · 0G Network</span>
             </div>
           </aside>
         </div>
